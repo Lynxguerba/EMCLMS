@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>All Enrollments Report</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 24px;
+      }
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      th {
+        background: #94a5ff;
+      }
+      h1 {
+        margin-top: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>All Enrollments</h1>
+    <table>
+      <tr>
+        <th>Enrollment ID</th>
+        <th>User ID</th>
+        <th>User Name</th>
+        <th>Course ID</th>
+        <th>Course Title</th>
+        <th>Date</th>
+      </tr>
+      {% for e in enrollments %}
+      <tr>
+        <td>{{ e.enrollment_id }}</td>
+        <td>{{ e.user_id }}</td>
+        <td>{{ e.user_name }}</td>
+        <td>{{ e.course_id }}</td>
+        <td>{{ e.course_title }}</td>
+        <td>{{ e.enrollment_date }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </body>
+</html>

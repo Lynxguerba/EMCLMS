@@ -1,0 +1,221 @@
+
+```
+EMCLMS
+├─ backend
+│  ├─ api
+│  │  ├─ admin.py
+│  │  ├─ apps.py
+│  │  ├─ embedding_utils.py
+│  │  ├─ management
+│  │  │  └─ commands
+│  │  │     └─ generate_book_embeddings.py
+│  │  ├─ models.py
+│  │  ├─ seeds.py
+│  │  ├─ serializers
+│  │  ├─ templates
+│  │  │  ├─ admin_report_template.html
+│  │  │  ├─ allcourses_admin_report_template.html
+│  │  │  ├─ allenrollments_admin_report_template.html
+│  │  │  ├─ allusers_admin_report_template.html
+│  │  │  ├─ booksdata_admin_report_template.html
+│  │  │  ├─ courseswithstudent_instructor_report_template.html
+│  │  │  ├─ facultylogs_admin_report_template.html
+│  │  │  ├─ passwordresetrequests_admin_report_template.html
+│  │  │  ├─ studentlogs_admin_report_template.html
+│  │  │  ├─ studentswithgrades_instructor_report_template.html
+│  │  │  └─ student_report_template.html
+│  │  ├─ tests.py
+│  │  ├─ urls.py
+│  │  ├─ utils
+│  │  │  └─ text_helpers.py
+│  │  ├─ views
+│  │  │  ├─ add_instructor_log.py
+│  │  │  ├─ add_section.py
+│  │  │  ├─ add_student_log.py
+│  │  │  ├─ admin_add_new_book.py
+│  │  │  ├─ admin_course_enrollment_count.py
+│  │  │  ├─ admin_create_course.py
+│  │  │  ├─ admin_create_user.py
+│  │  │  ├─ admin_generate_allcourses_pdf_report.py
+│  │  │  ├─ admin_generate_allenrollments_pdf_report.py
+│  │  │  ├─ admin_generate_allusers_pdf_report.py
+│  │  │  ├─ admin_generate_booksdata_pdf_report.py
+│  │  │  ├─ admin_generate_facultylogs_pdf_report.py
+│  │  │  ├─ admin_generate_passwordresetrequests_pdf_report.py
+│  │  │  ├─ admin_generate_pdf_report.py
+│  │  │  ├─ admin_generate_studentlogs_pdf_report.py
+│  │  │  ├─ admin_get_all_courses_with_instructor_fullnames.py
+│  │  │  ├─ admin_get_all_password_reset_of_users.py
+│  │  │  ├─ admin_get_all_rows.py
+│  │  │  ├─ admin_get_book_count.py
+│  │  │  ├─ admin_get_course_completion.py
+│  │  │  ├─ admin_get_users_by_type.py
+│  │  │  ├─ admin_get_user_count.py
+│  │  │  ├─ admin_password_reset.py
+│  │  │  ├─ admin_update_book.py
+│  │  │  ├─ auth_views.py
+│  │  │  ├─ course_count.py
+│  │  │  ├─ course_detail.py
+│  │  │  ├─ course_sections.py
+│  │  │  ├─ get_course_school_years.py
+│  │  │  ├─ get_instructor_courses.py
+│  │  │  ├─ get_instructor_grades.py
+│  │  │  ├─ get_instructor_logs.py
+│  │  │  ├─ get_student_enrollments.py
+│  │  │  ├─ get_student_logs.py
+│  │  │  ├─ get_student_performance.py
+│  │  │  ├─ get_submission.py
+│  │  │  ├─ instructor_add_content.py
+│  │  │  ├─ instructor_add_course_book.py
+│  │  │  ├─ instructor_course_count.py
+│  │  │  ├─ instructor_enrollment_stats.py
+│  │  │  ├─ instructor_generate_courseswithstudent_pdf_report.py
+│  │  │  ├─ instructor_generate_studentwithgrades_pdf_report.py
+│  │  │  ├─ instructor_get_all_unenrolled_students.py
+│  │  │  ├─ instructor_get_content_title.py
+│  │  │  ├─ instructor_get_courses_with_students.py
+│  │  │  ├─ instructor_get_course_book.py
+│  │  │  ├─ instructor_student_count.py
+│  │  │  ├─ instructor_update_content.py
+│  │  │  ├─ instructor_update_grade.py
+│  │  │  ├─ instructor_update_section.py
+│  │  │  ├─ section_content.py
+│  │  │  ├─ semantic_search_books.py
+│  │  │  ├─ student_generate_pdf_report.py
+│  │  │  ├─ student_get_all_contents.py
+│  │  │  ├─ student_get_all_courses.py
+│  │  │  ├─ student_get_all_sections.py
+│  │  │  ├─ student_get_contents_for_course.py
+│  │  │  ├─ student_get_course_detail.py
+│  │  │  ├─ student_get_recommended_books.py
+│  │  │  ├─ student_get_sections_for_course.py
+│  │  │  ├─ student_get_submission.py
+│  │  │  ├─ student_submit_activity_files.py
+│  │  │  ├─ submit_activity.py
+│  │  │  ├─ toggle_section_completed.py
+│  │  │  └─ __init__.py
+│  │  ├─ views.py
+│  │  └─ __init__.py
+│  ├─ core
+│  │  ├─ asgi.py
+│  │  ├─ settings.py
+│  │  ├─ urls.py
+│  │  ├─ wsgi.py
+│  │  └─ __init__.py
+│  ├─ db.sqlite3
+│  ├─ manage.py
+│  └─ requirements.txt
+├─ frontend
+│  ├─ dist
+│  │  ├─ assets
+│  │  │  ├─ index-COXOWOpF.css
+│  │  │  └─ index-rkR27OT2.js
+│  │  ├─ emc_campus.JPG
+│  │  ├─ emc_logo.png
+│  │  ├─ icons
+│  │  │  ├─ Education.svg
+│  │  │  ├─ File.svg
+│  │  │  ├─ Gear.svg
+│  │  │  ├─ Layout.svg
+│  │  │  ├─ Mortarboard-1.svg
+│  │  │  ├─ Mortarboard.svg
+│  │  │  ├─ Openbook.svg
+│  │  │  ├─ University building.svg
+│  │  │  └─ User.svg
+│  │  ├─ index.html
+│  │  └─ SAMPLE-LEARNING-ACTIVITY-SHEET.pdf
+│  ├─ eslint.config.js
+│  ├─ index.html
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ public
+│  │  ├─ emc_campus.JPG
+│  │  ├─ emc_logo.png
+│  │  └─ icons
+│  │     ├─ Education.svg
+│  │     ├─ File.svg
+│  │     ├─ Gear.svg
+│  │     ├─ Layout.svg
+│  │     ├─ Mortarboard-1.svg
+│  │     ├─ Mortarboard.svg
+│  │     ├─ Openbook.svg
+│  │     ├─ University building.svg
+│  │     └─ User.svg
+│  ├─ README.md
+│  ├─ src
+│  │  ├─ hooks
+│  │  ├─ index.css
+│  │  ├─ main.tsx
+│  │  ├─ pages
+│  │  │  ├─ AdminChangePasswords.tsx
+│  │  │  ├─ AdminDashboard.tsx
+│  │  │  ├─ AdminFacultyLogs.tsx
+│  │  │  ├─ AdminLogs.tsx
+│  │  │  ├─ AdminManageBooks.tsx
+│  │  │  ├─ AdminManageCourses.tsx
+│  │  │  ├─ AdminManageUsers.tsx
+│  │  │  ├─ AdminSettings.tsx
+│  │  │  ├─ AdminStudentLogs.tsx
+│  │  │  ├─ components
+│  │  │  │  ├─ AdminAddBookModal.tsx
+│  │  │  │  ├─ AdminCourseDataGrid.tsx
+│  │  │  │  ├─ AdminCreateCourseModal.tsx
+│  │  │  │  ├─ AdminCreateUserModal.tsx
+│  │  │  │  ├─ AdminEditBookModal.tsx
+│  │  │  │  ├─ AdminEnrollStudentModal.tsx
+│  │  │  │  ├─ AdminPasswordResetModal.tsx
+│  │  │  │  ├─ AdminReportModal.tsx
+│  │  │  │  ├─ InstructorStudentCourseCollapsibleDataGrid.tsx
+│  │  │  │  ├─ CustomBox.tsx
+│  │  │  │  ├─ EditSectionModal.tsx
+│  │  │  │  ├─ EnrollmentTable.tsx
+│  │  │  │  ├─ InstructorAddSectionModal.tsx
+│  │  │  │  ├─ InstructorCourseAddContentModal.tsx
+│  │  │  │  ├─ InstructorCourseContentModal.tsx
+│  │  │  │  ├─ InstructorCourseEditContentModal.tsx
+│  │  │  │  ├─ InstructorCourseEditSectionModal.tsx
+│  │  │  │  ├─ InstructorCourseEnrollStudentModal.tsx
+│  │  │  │  ├─ InstructorCourseIntroduction.tsx
+│  │  │  │  ├─ InstructorCourseSections.tsx
+│  │  │  │  ├─ InstructorCoursesModal.tsx
+│  │  │  │  ├─ InstructorReportModal.tsx
+│  │  │  │  ├─ Navbar.tsx
+│  │  │  │  ├─ Sidebar.tsx
+│  │  │  │  ├─ StudentCourseContentModal.tsx
+│  │  │  │  ├─ StudentCustomCalendar.tsx
+│  │  │  │  ├─ StudentRecommendedBooksTable.tsx
+│  │  │  │  ├─ StudentTimeline.tsx
+│  │  │  │  └─ UserResetPasswordModal.tsx
+│  │  │  ├─ InstructorBookSearch.tsx
+│  │  │  ├─ InstructorCourse.tsx
+│  │  │  ├─ InstructorCourses.tsx
+│  │  │  ├─ InstructorDashboard.tsx
+│  │  │  ├─ InstructorGrade.tsx
+│  │  │  ├─ InstructorGradeContent.tsx
+│  │  │  ├─ InstructorGradeCourse.tsx
+│  │  │  ├─ LoginPage.tsx
+│  │  │  ├─ NotFoundPage.tsx
+│  │  │  ├─ ProfileSettings.tsx
+│  │  │  ├─ Router.tsx
+│  │  │  ├─ StudentCourse.tsx
+│  │  │  ├─ StudentCourses.tsx
+│  │  │  ├─ StudentDashboard.tsx
+│  │  │  ├─ StudentPerformance.tsx
+│  │  │  └─ UserBookSearch.tsx
+│  │  ├─ theme.ts
+│  │  ├─ types
+│  │  │  ├─ book.ts
+│  │  │  ├─ content.ts
+│  │  │  ├─ course.ts
+│  │  │  ├─ passwordreset.ts
+│  │  │  ├─ section.ts
+│  │  │  └─ user.ts
+│  │  └─ vite-env.d.ts
+│  ├─ tsconfig.app.json
+│  ├─ tsconfig.json
+│  ├─ tsconfig.node.json
+│  └─ vite.config.ts
+├─ README.md
+└─ tree.txt
+
+```

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Books Data Report</title>
+    <style>
+      /* xhtml2pdf-safe styles: avoid shorthand, keep it simple */
+      table,
+      th,
+      td {
+        border: 1px solid #000;
+      }
+      th {
+        background-color: #ccccff;
+        font-size: 10pt;
+      }
+      td {
+        font-size: 10pt;
+      }
+      h1 {
+        margin-top: 32px;
+        font-size: 14pt;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Librarian Books Data Report</h1>
+    <table border="1" cellspacing="0" cellpadding="4" width="100%">
+      <thead>
+        <tr>
+          <th width="6%">ID</th>
+          <th width="15%">Title</th>
+          <th width="16%">Author</th>
+          <th width="14%">Publisher</th>
+          <th width="10%">Copyright</th>
+          <th width="12%">ISBN</th>
+          <th width="6%">Copy</th>
+          <th width="12%">Recommen<br />dation Count</th>
+          <th width="9%">Category</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for book in books_data %}
+        <tr>
+          <td>{{ book.id|safe }}</td>
+          <td>{{ book.title|safe }}</td>
+          <td>{{ book.author|safe }}</td>
+          <td>{{ book.publisher|safe }}</td>
+          <td>{{ book.copyright|safe }}</td>
+          <td>{{ book.isbn|safe }}</td>
+          <td>{{ book.copy|safe }}</td>
+          <td>{{ book.recommendation_count|safe }}</td>
+          <td>{{ book.category|safe }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>

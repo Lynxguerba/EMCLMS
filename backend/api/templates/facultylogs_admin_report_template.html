@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Faculty Logs Report</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 24px;
+      }
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      th {
+        background: #94a5ff;
+      }
+      h1 {
+        margin-top: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Faculty Logs</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Timestamp</th>
+          <th>Faculty</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in faculty_logs %}
+        <tr>
+          <td>{{ log.log_id }}</td>
+          <td>{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
+          <td>{{ log.faculty_name }}</td>
+          <td>{{ log.message }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>

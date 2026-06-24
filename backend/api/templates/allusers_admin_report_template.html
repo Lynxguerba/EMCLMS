@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>All Users Report</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 24px;
+      }
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      th {
+        background: #94a5ff;
+      }
+      h1 {
+        margin-top: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>All Users</h1>
+    <table>
+      <tr>
+        <th>User ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>User Type</th>
+      </tr>
+      {% for user in users %}
+      <tr>
+        <td>{{ user.user_id }}</td>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+        <td>{{ user.email|safe }}</td>
+        <td>{{ user.user_type }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </body>
+</html>

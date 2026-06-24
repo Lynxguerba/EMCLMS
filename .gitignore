@@ -1,0 +1,35 @@
+# === General ===
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.env
+*.local
+logs
+*.log
+
+# === Frontend ===
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+
+# === Backend ===
+backend/venv/
+backend/__pycache__/
+backend/media/*
+*.py[cod]
+*.so
+*.dll
+*.lib
+*.pyd
+tested_views.txt

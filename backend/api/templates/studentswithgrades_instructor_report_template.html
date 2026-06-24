@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Student Performance Report</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 24px;
+      }
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      th {
+        background: #94a5ff;
+      }
+      h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      h2 {
+        margin-top: 32px;
+        font-size: 18px;
+      }
+      h3 {
+        font-size: 14px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Student Performance Report</h1>
+    <p>Generated for: {{ instructor.first_name }} {{ instructor.last_name }}</p>
+
+    {% if courses_data %} {% for course in courses_data %}
+    <h2>{{ course.course_title }} ({{ course.course_code }})</h2>
+
+    {% if course.contents %} {% for content in course.contents %}
+    <h3>
+      {{ content.content_title }} (Total Score: {{ content.total_score }})
+    </h3>
+
+    {% if content.student_performances %}
+    <table>
+      <thead>
+        <tr>
+          <th>Student ID</th>
+          <th>Student Name</th>
+          <th>Email</th>
+          <th>Score</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for perf in content.student_performances %}
+        <tr>
+          <td>{{ perf.user_id }}</td>
+          <td>
+            {{ perf.student_name }}
+          </td>
+          <td>{{ perf.email | safe }}</td>
+          <td>{{ perf.score }}</td>
+          <td>{{ perf.status }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>No student submissions for this activity.</p>
+    {% endif %} {% endfor %} {% else %}
+    <p>No activity contents in this course.</p>
+    {% endif %} {% endfor %} {% else %}
+    <p>No data available for the selected courses.</p>
+    {% endif %}
+  </body>
+</html>

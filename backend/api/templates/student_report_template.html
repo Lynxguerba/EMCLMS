@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Enrolled Courses</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 24px;
+      }
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      th {
+        background: #94a5ff;
+      }
+      h2 {
+        margin-top: 32px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Student Academic Report</h1>
+
+    <div class="user-info">
+      <p>
+        <strong>Student Name:</strong> {{ user.first_name }} {{ user.last_name }}
+      </p>
+      <p><strong>Student ID:</strong> {{ user.user_id }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+    </div>
+
+    {% regroup grades by content.section.course as courses_list %} 
+    {% for course in courses_list %}
+    <h2>
+      Course: {{ course.grouper.course_title }} ({{ course.grouper.course_code }})
+    </h2>
+
+    {% regroup course.list by content.section as sections_list %} 
+    {% for section in sections_list %}
+    <h3>Section: {{ section.grouper.section_title }}</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Content Title</th>
+          <th>Score</th>
+          <th>Total Score</th>
+          <th>Feedback</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for grade in section.list %}
+        <tr>
+          <td>{{ grade.content.content_title }}</td>
+          <td>{{ grade.score|default:"N/A" }}</td>
+          <td>{{ grade.content.total_score|default:"N/A" }}</td>
+          <td>{{ grade.feedback|default:"No feedback" }}</td>
+          <td>{{ grade.status }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endfor %} {% endfor %}
+  </body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>All Courses Report</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 24px;
+      }
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      th {
+        background: #94a5ff;
+      }
+      h1 {
+        margin-top: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>All Courses</h1>
+    <table>
+      <tr>
+        <th>Course ID</th>
+        <th>Course Code</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Instructor</th>
+      </tr>
+      {% for course in courses %}
+      <tr>
+        <td>{{ course.course_id }}</td>
+        <td>{{ course.course_code }}</td>
+        <td>{{ course.course_title }}</td>
+        <td>{{ course.description }}</td>
+        <td>{{ course.instructor_name }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </body>
+</html>
