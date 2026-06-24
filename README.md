@@ -1,5 +1,40 @@
 # EMCLMS - Evangelical Mission College Learning Management System
 
+## Quick Start (Docker)
+
+To easily run the entire project without installing dependencies manually on your machine, you can use Docker Compose. This setup will spin up the PostgreSQL database, Django backend, and React frontend simultaneously.
+
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) installed.
+- [Docker Compose](https://docs.docker.com/compose/install/) installed.
+
+### Run the Project
+
+1. Open your terminal in the root directory (where `docker-compose.yml` is located).
+2. Run the following command to build and start the containers:
+   ```bash
+   docker-compose up --build
+   ```
+3. Wait for the build process to finish and for all the services to start.
+4. Once the terminal shows that the server is running, open your browser and navigate to:
+   - **Frontend UI:** [http://localhost:5173](http://localhost:5173)
+   - **Backend API:** [http://localhost:8000](http://localhost:8000)
+
+**Note:** The backend container will automatically apply database migrations and collect static files upon startup. 
+
+If you want to seed the database with initial sample data, open a **new terminal** and run:
+```bash
+docker-compose exec backend python api/seeds.py
+```
+
+To stop the servers, just press `Ctrl + C` in the terminal where Docker is running, or run:
+```bash
+docker-compose down
+```
+
+---
+
+
 A full-stack learning management system built with Django and React.
 
 ## EMC LMS Screenschots

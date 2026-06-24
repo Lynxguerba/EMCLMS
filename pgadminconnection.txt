@@ -1,0 +1,5 @@
+Host name/address:  db
+  • Port:  5432
+  • Maintenance database:  emclms
+  • Username:  emclms_user
+  • Password:  emclms_password
