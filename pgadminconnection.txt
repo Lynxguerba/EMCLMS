@@ -3,3 +3,9 @@ Host name/address:  db
   • Maintenance database:  emclms
   • Username:  emclms_user
   • Password:  emclms_password
+
+pgAdmin Web Interface Login
+
+  Go to http://localhost:5050 in your web browser and enter:
+  • Email:  admin@admin.com
+  • Password:  root
