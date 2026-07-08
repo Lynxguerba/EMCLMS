@@ -81,15 +81,24 @@ def admin_db_restore(request):
 
     try:
         # Step 1: Drop and recreate the public schema
-        # This is a destructive operation required before pg_restore --schema=public
+        # Extract the base username from the URL (handles Supabase pooler format: user.project)
+        from urllib.parse import urlparse
+        parsed = urlparse(db_url)
+        base_user = parsed.username
+        if base_user and "." in base_user:
+            base_user = base_user.split(".")[0]
+        elif not base_user:
+            base_user = "postgres"
+
         with connection.cursor() as cursor:
             # Note: CASCADE will drop all objects in the schema
             cursor.execute("DROP SCHEMA IF EXISTS public CASCADE;")
             cursor.execute("CREATE SCHEMA public;")
             
-            # Grant privileges to the currently logged in database user (CURRENT_USER)
-            # This handles connection poolers (like Supabase) where the login username differs from the actual database role.
-            cursor.execute("GRANT ALL ON SCHEMA public TO CURRENT_USER;")
+            # Grant privileges to the base database user (e.g. 'postgres')
+            # We avoid CURRENT_USER because connection poolers sometimes report a username 
+            # that doesn't actually exist as a role in the underlying pg_roles catalog.
+            cursor.execute(f'GRANT ALL ON SCHEMA public TO "{base_user}";')
             cursor.execute("GRANT ALL ON SCHEMA public TO public;")
 
         # Step 2: Run pg_restore
