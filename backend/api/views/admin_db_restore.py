@@ -72,9 +72,9 @@ def admin_db_restore(request):
             cursor.execute("DROP SCHEMA IF EXISTS public CASCADE;")
             cursor.execute("CREATE SCHEMA public;")
             
-            # Grant privileges to the current database user instead of hardcoding 'postgres'
-            db_user = connection.settings_dict.get('USER', 'postgres')
-            cursor.execute(f'GRANT ALL ON SCHEMA public TO "{db_user}";')
+            # Grant privileges to the currently logged in database user (CURRENT_USER)
+            # This handles connection poolers (like Supabase) where the login username differs from the actual database role.
+            cursor.execute("GRANT ALL ON SCHEMA public TO CURRENT_USER;")
             cursor.execute("GRANT ALL ON SCHEMA public TO public;")
 
         # Step 2: Run pg_restore

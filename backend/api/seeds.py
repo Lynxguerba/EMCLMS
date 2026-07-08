@@ -1470,89 +1470,92 @@ def seed_registration_requests():
 
 
 def seed_accounting():
-    reset_sequence_for_model(AccountingFee)
-    reset_sequence_for_model(StudentBalance)
-    reset_sequence_for_model(StudentTransaction)
-
-    fees_data = [
-        {"name": "Tuition Fee", "amount": 0.00, "status": "Active", "color": "from-blue-500 to-indigo-600"},
-        {"name": "Registration Fee", "amount": 500.00, "status": "Active", "color": "from-emerald-400 to-teal-500"},
-        {"name": "Library Fee", "amount": 300.00, "status": "Active", "color": "from-amber-400 to-orange-500"},
-        {"name": "Laboratory Fee", "amount": 1200.00, "status": "Active", "color": "from-rose-400 to-pink-500"},
-        {"name": "Late Enrollment Fine", "amount": 1000.00, "status": "Active", "color": "from-purple-400 to-fuchsia-500"},
-    ]
-    fees = [AccountingFee(**f) for f in fees_data]
-    AccountingFee.objects.bulk_create(fees)
-    print("✅ Accounting fees seeded")
-
-    students = User.objects.filter(user_type="Student")
-    accounting_admin = User.objects.filter(user_type="Accounting").first()
-    
-    if not accounting_admin:
-        # This shouldn't happen if seed_users is run first, but just in case
-        accounting_admin = User.objects.create(
-            email="accounting_seed@gmail.com",
-            first_name="Finance",
-            last_name="Staff",
-            user_type="Accounting"
-        )
-        accounting_admin.set_password("asd123ASD")
-        accounting_admin.save()
-
+    from django.db import transaction
     from decimal import Decimal
-    for student in students:
-        # Create initial balance
-        StudentBalance.objects.create(student=student, outstanding_balance=0)
+
+    with transaction.atomic():
+        reset_sequence_for_model(AccountingFee)
+        reset_sequence_for_model(StudentBalance)
+        reset_sequence_for_model(StudentTransaction)
+
+        fees_data = [
+            {"name": "Tuition Fee", "amount": 0.00, "status": "Active", "color": "from-blue-500 to-indigo-600"},
+            {"name": "Registration Fee", "amount": 500.00, "status": "Active", "color": "from-emerald-400 to-teal-500"},
+            {"name": "Library Fee", "amount": 300.00, "status": "Active", "color": "from-amber-400 to-orange-500"},
+            {"name": "Laboratory Fee", "amount": 1200.00, "status": "Active", "color": "from-rose-400 to-pink-500"},
+            {"name": "Late Enrollment Fine", "amount": 1000.00, "status": "Active", "color": "from-purple-400 to-fuchsia-500"},
+        ]
+        fees = [AccountingFee(**f) for f in fees_data]
+        AccountingFee.objects.bulk_create(fees)
+        print("✅ Accounting fees seeded")
+
+        students = User.objects.filter(user_type="Student")
+        accounting_admin = User.objects.filter(user_type="Accounting").first()
         
-        # Add some random transactions
-        num_transactions = random.randint(3, 7)
-        for _ in range(num_transactions):
-            is_charge = random.random() < 0.7 # 70% chance of being a charge
-            amount = Decimal(str(random.randint(500, 5000)))
-            t_type = "Charge" if is_charge else "Payment"
-            category = random.choice(["Tuition", "Misc", "Registration", "Library"])
-            
-            # Create transaction
-            t = StudentTransaction.objects.create(
-                student=student,
-                amount=amount,
-                transaction_type=t_type,
-                category=category,
-                description=f"Seeded {t_type}",
-                created_by=accounting_admin
+        if not accounting_admin:
+            # This shouldn't happen if seed_users is run first, but just in case
+            accounting_admin = User.objects.create(
+                email="accounting_seed@gmail.com",
+                first_name="Finance",
+                last_name="Staff",
+                user_type="Accounting"
             )
+            accounting_admin.set_password("asd123ASD")
+            accounting_admin.save()
+
+        for student in students:
+            # Create initial balance
+            StudentBalance.objects.create(student=student, outstanding_balance=0)
             
-            # Apply our NEW logic for seeding
-            bal = StudentBalance.objects.get(student=student)
-            if t_type == "Charge":
-                t.remaining_balance = amount
-                t.save()
-                bal.outstanding_balance += amount
-                bal.save()
-            else:
-                # Allocation logic (FIFO)
-                pool = amount
-                unpaid_charges = StudentTransaction.objects.filter(student=student, transaction_type="Charge").exclude(remaining_balance=0).order_by('created_at')
+            # Add some random transactions
+            num_transactions = random.randint(3, 7)
+            for _ in range(num_transactions):
+                is_charge = random.random() < 0.7 # 70% chance of being a charge
+                amount = Decimal(str(random.randint(500, 5000)))
+                t_type = "Charge" if is_charge else "Payment"
+                category = random.choice(["Tuition", "Misc", "Registration", "Library"])
                 
-                for charge in unpaid_charges:
-                    if pool <= 0: break
-                    alloc_amt = min(pool, charge.remaining_balance)
-                    
-                    TransactionAllocation.objects.create(
-                        payment=t,
-                        charge=charge,
-                        amount_allocated=alloc_amt
-                    )
-                    charge.remaining_balance -= alloc_amt
-                    charge.save()
-                    pool -= alloc_amt
-                    
-                    bal.outstanding_balance -= alloc_amt
+                # Create transaction
+                t = StudentTransaction.objects.create(
+                    student=student,
+                    amount=amount,
+                    transaction_type=t_type,
+                    category=category,
+                    description=f"Seeded {t_type}",
+                    created_by=accounting_admin
+                )
+                
+                # Apply our NEW logic for seeding
+                bal = StudentBalance.objects.get(student=student)
+                if t_type == "Charge":
+                    t.remaining_balance = amount
+                    t.save()
+                    bal.outstanding_balance += amount
                     bal.save()
-                
-                # Unallocated amount is unused credit
-                t.remaining_balance = pool
-                t.save()
+                else:
+                    # Allocation logic (FIFO)
+                    pool = amount
+                    unpaid_charges = StudentTransaction.objects.filter(student=student, transaction_type="Charge").exclude(remaining_balance=0).order_by('created_at')
+                    
+                    for charge in unpaid_charges:
+                        if pool <= 0: break
+                        alloc_amt = min(pool, charge.remaining_balance)
+                        
+                        TransactionAllocation.objects.create(
+                            payment=t,
+                            charge=charge,
+                            amount_allocated=alloc_amt
+                        )
+                        charge.remaining_balance -= alloc_amt
+                        charge.save()
+                        pool -= alloc_amt
+                        
+                        bal.outstanding_balance -= alloc_amt
+                        bal.save()
+                    
+                    # Unallocated amount is unused credit
+                    t.remaining_balance = pool
+                    t.save()
 
     print(f"✅ Accounting ledgers seeded for {students.count()} students")
 
