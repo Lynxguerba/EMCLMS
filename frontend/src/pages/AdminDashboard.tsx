@@ -40,6 +40,7 @@ import { BarChart, PieChart } from "@mui/x-charts";
 // Custom components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 // Lucide Icons
 import {
@@ -612,8 +613,11 @@ export default function AdminDashboard() {
         />
        </div>
       </div>
-    )}
-   </div>
-  </Box>
- );
+     )}
+    </div>
+    <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
+  );
 }
