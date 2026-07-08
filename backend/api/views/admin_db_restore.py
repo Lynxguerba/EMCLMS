@@ -52,6 +52,21 @@ def admin_db_restore(request):
     if db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql://", 1)
 
+    # Convert Supabase connection pooler URL to direct connection URL
+    # pg_restore must use the direct connection, otherwise it fails with 'role does not exist' 
+    # or times out because of the connection pooler.
+    if "pooler.supabase.com" in db_url:
+        from urllib.parse import urlparse, urlunparse
+        parsed = urlparse(db_url)
+        username = parsed.username
+        password = parsed.password
+        if username and "." in username:
+            user_part, project_ref = username.split(".", 1)
+            # Create direct connection netloc: db.[project_ref].supabase.co:5432
+            new_netloc = f"{user_part}:{password}@db.{project_ref}.supabase.co:5432"
+            parsed = parsed._replace(netloc=new_netloc)
+            db_url = urlunparse(parsed)
+
     # Save uploaded file to a temporary location
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         for chunk in backup_file.chunks():
