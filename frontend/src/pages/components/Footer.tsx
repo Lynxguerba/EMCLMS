@@ -4,7 +4,7 @@ import { Facebook, Mail, Phone, MapPin } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="bg-[#3d4aff] text-white mt-8 overflow-hidden w-full border-t border-blue-500/20">
-      <div className="max-w-7xl mx-auto px-6 py-10 md:py-12">
+      <div className="w-full px-6 md:px-12 py-10 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {/* Brand/Logo Section */}
           <div className="flex flex-col space-y-4">

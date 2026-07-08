@@ -21,6 +21,7 @@ import autoTable from "jspdf-autotable";
 // Local components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 // Hooks
 import { useLibrarianBooksReport } from "../hooks/useQueries";
@@ -625,6 +626,9 @@ export default function LibrarianReport() {
      </div>
     </div>
    </div>
-  </>
- );
+      <div className="md:ml-52">
+     <Footer />
+    </div>
+   </>
+  );
 }

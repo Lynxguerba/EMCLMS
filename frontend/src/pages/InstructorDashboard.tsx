@@ -19,6 +19,7 @@ import { formatDistanceToNow } from "date-fns";
 // Custom components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import InstructorStudentCourseCollapsibleTable from "./components/InstructorStudentCourseCollapsibleDataGrid";
 
 // Lucide Icons
@@ -557,6 +558,9 @@ export default function InstructorDashboard() {
     {/* Footer Spacer */}
     <div className="mt-12 md:mt-16"></div>
    </div>
-  </Box>
- );
+    <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
+  );
 }

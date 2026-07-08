@@ -15,6 +15,7 @@ import axios from "axios";
 // Local components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import AdminCreateUserModal from "./components/AdminCreateUserModal";
 import AdminBulkUserUploadModal from "./components/AdminBulkUserUploadModal";
 import AdminUserDeleteModal from "./components/AdminUserDeleteModal";
@@ -680,6 +681,9 @@ export default function AdminManageUsers() {
     onSuccess={handleUserUpdated}
     onError={handleDeleteError}
    />
-  </>
- );
+      <div className="md:ml-52">
+     <Footer />
+    </div>
+   </>
+  );
 }

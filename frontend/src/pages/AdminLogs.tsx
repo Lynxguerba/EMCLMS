@@ -8,6 +8,7 @@ import { Box, CircularProgress } from "@mui/material";
 // Custom components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 // Lucide icons
 import { FileText, Users, Briefcase, ChevronRight } from "lucide-react";
@@ -120,6 +121,9 @@ export default function AdminLogs() {
           </button>
         </div>
       </div>
+        <div className="md:ml-52">
+     <Footer />
     </div>
+   </div>
   );
 }

@@ -8,6 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { Calendar, BookOpen, ChevronRight } from "lucide-react";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import WeeklyScheduleGrid, { ScheduleEvent } from "./components/WeeklyScheduleGrid";
 
 export default function StudentSchedule() {
@@ -104,6 +105,9 @@ export default function StudentSchedule() {
           </div>
         )}
       </div>
-    </Box>
+    <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
   );
 }

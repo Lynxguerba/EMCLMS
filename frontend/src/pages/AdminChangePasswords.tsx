@@ -10,6 +10,7 @@ import { useAdminPasswordResets, useResetUserPassword } from "../hooks/useQuerie
 // Internal component imports
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import PasswordResetModal from "./components/AdminPasswordResetModal";
 import { TableRowSkeleton } from "./components/Skeletons";
 import TableItemsPerPage from "../components/TableItemsPerPage";
@@ -489,6 +490,9 @@ export default function AdminChangePasswords() {
      onResetConfirm={handleResetPasswordConfirm}
     />
    )}
-  </>
- );
+      <div className="md:ml-52">
+     <Footer />
+    </div>
+   </>
+  );
 }

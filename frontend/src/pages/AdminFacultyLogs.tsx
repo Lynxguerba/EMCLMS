@@ -12,6 +12,7 @@ import { Box, CircularProgress, Avatar } from "@mui/material";
 // Custom components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import { TableRowSkeleton } from "./components/Skeletons";
 import TableItemsPerPage from "../components/TableItemsPerPage";
 
@@ -338,6 +339,9 @@ export default function AdminFacultyLogs() {
      )}
     </div>
    </div>
-  </div>
- );
+      <div className="md:ml-52">
+     <Footer />
+    </div>
+   </div>
+  );
 }

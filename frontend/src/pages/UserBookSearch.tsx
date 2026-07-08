@@ -31,6 +31,7 @@ import {
 // Components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import { getFileUrl, forceDownload } from "../utils/fileUtils";
 import BorrowRequestModal from "./components/BorrowRequestModal";
 import { 
@@ -598,7 +599,10 @@ const UserBookSearch: React.FC = () => {
         book={selectedBook}
         isPending={selectedBook ? pendingRequestIds.has(selectedBook.id) : false}
       />
-    </Box>
+        <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
   );
 };
 

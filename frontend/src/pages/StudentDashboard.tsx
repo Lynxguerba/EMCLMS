@@ -33,6 +33,7 @@ import Sidebar from "./components/Sidebar";
 import StudentTimeline from "./components/StudentTimeline";
 import StudentCustomCalendar from "./components/StudentCustomCalendar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 // Lucide Icons
 import {
@@ -490,6 +491,9 @@ export default function StudentDashboard() {
      </div>
     </div>
    </div>
-  </Box>
- );
+    <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
+  );
 }

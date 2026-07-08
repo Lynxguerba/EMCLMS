@@ -21,6 +21,7 @@ import {
 
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import TableItemsPerPage from "../components/TableItemsPerPage";
 import { 
   useLibrarianBorrowRecords, 
@@ -1303,6 +1304,9 @@ function ReturnedBooksModal({
           </button>
         </div>
       </div>
+        <div className="md:ml-52">
+     <Footer />
     </div>
+   </div>
   );
 }

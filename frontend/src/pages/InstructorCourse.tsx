@@ -27,6 +27,7 @@ import WeeklyScheduleGrid from "./components/WeeklyScheduleGrid";
 // Custom Components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import InstructorAddSectionModal from "./components/InstructorAddSectionModal";
 
 // import InstructorCourseIntroduction from "./components/InstructorCourseIntroduction";
@@ -555,6 +556,9 @@ export default function InstructorCourse() {
      {snackbarMessage}
     </Alert>
    </Snackbar>
-  </Box>
- );
+      <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
+  );
 }

@@ -16,6 +16,7 @@ import {
 import { PieChart as MuiPieChart } from "@mui/x-charts";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import { useAuth } from "../context/AuthContext";
 import {
   useLibrarianTotalBooks,
@@ -701,6 +702,9 @@ export default function LibrarianDashboard() {
      )}
     </div>
    </div>
-  </Box>
- );
+    <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
+  );
 }

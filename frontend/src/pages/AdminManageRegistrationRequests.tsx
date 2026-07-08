@@ -13,6 +13,7 @@ import { RegistrationRequest } from "../types/user";
 // Local components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import AdminAcceptRegistrationModal from "./components/AdminAcceptRegistrationModal";
 import AdminRejectRegistrationModal from "./components/AdminRejectRegistrationModal";
 import { TableRowSkeleton } from "./components/Skeletons";
@@ -455,6 +456,9 @@ export default function AdminManageRegistrationRequests() {
     onSuccess={handleRequestRejected}
     onError={handleRejectError}
    />
-  </>
- );
+      <div className="md:ml-52">
+     <Footer />
+    </div>
+   </>
+  );
 }

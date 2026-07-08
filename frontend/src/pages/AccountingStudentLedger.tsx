@@ -3,6 +3,7 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import { 
   Box, 
   Avatar, 
@@ -485,6 +486,9 @@ export default function AccountingStudentLedger() {
           initialType="Payment"
         />
       )}
-    </Box>
+        <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
   );
 }

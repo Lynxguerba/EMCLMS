@@ -16,6 +16,7 @@ import { Search, Grid3x3, List, BookOpen, GraduationCap, Calendar, ChevronRight 
 // Internal component imports
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 // Hooks
 import { useInstructorCourses } from "../hooks/useQueries";
@@ -244,6 +245,9 @@ export default function InstructorGrade() {
      </div>
     </div>
    </div>
-  </Box>
- );
+    <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
+  );
 }

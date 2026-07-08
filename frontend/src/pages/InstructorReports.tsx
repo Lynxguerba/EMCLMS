@@ -9,6 +9,7 @@ import { useSchoolYear } from "../context/SchoolYearContext";
 
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import { getFileUrl } from "../utils/fileUtils";
 import {
  FileText,
@@ -725,8 +726,11 @@ const InstructorReports = () => {
      )}
     </div>
    </div>
-  </Box>
- );
+      <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
+  );
 };
 
 export default InstructorReports;

@@ -19,6 +19,7 @@ import {
 
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import { useUserBorrowRecords } from "../hooks/useQueries";
 
 interface ReturnItem {
@@ -532,8 +533,11 @@ const InstructorReturnBooks = () => {
                     </div>
                 </div>
             </div>
-        </Box>
-    );
+            <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
+  );
 };
 
 export default InstructorReturnBooks;

@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import { 
   Box, 
   Avatar, 
@@ -443,6 +444,9 @@ export default function AccountingStudents() {
         initialType={transactionType}
         onSuccess={fetchStudents}
       />
-    </Box>
+        <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
   );
 }

@@ -8,6 +8,7 @@ import { useAuth } from "../context/AuthContext";
 
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import TableItemsPerPage from "../components/TableItemsPerPage";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -1188,6 +1189,9 @@ export default function AdminReports() {
      )}
     </div>
    </div>
-  </div>
- );
+      <div className="md:ml-52">
+     <Footer />
+    </div>
+   </div>
+  );
 }

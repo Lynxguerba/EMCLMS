@@ -13,6 +13,7 @@ import { useAuth } from "../context/AuthContext";
 // Custom components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import AdminCourseDataGrid from "./components/AdminCourseDataGrid";
 
 // Lucide icons
@@ -76,6 +77,9 @@ export default function AdminManageCourses() {
 
     <AdminCourseDataGrid />
    </div>
-  </div>
- );
+      <div className="md:ml-52">
+     <Footer />
+    </div>
+   </div>
+  );
 }

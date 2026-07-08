@@ -31,6 +31,7 @@ import {
 // Local components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import { getFileUrl, forceDownload } from "../utils/fileUtils";
 
 // Hooks
@@ -942,6 +943,9 @@ export default function InstructorGradeContent() {
           </div>
         )}
       </Box>
-    </>
+        <div className="md:ml-52">
+     <Footer />
+    </div>
+   </>
   );
 }

@@ -43,6 +43,7 @@ import {
 // Custom Components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import StudentRecommendedBooksTable from "./components/StudentRecommendedBooksTable";
 import StudentCourseContentModal from "./components/StudentCourseContentModal";
 import { CourseContentSkeleton } from "./components/Skeletons";
@@ -497,6 +498,9 @@ export default function StudentCourse() {
       </>
     )}
    </div>
-  </Box>
- );
+    <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
+  );
 }

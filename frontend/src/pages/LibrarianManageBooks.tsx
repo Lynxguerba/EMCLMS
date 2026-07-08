@@ -15,6 +15,7 @@ import { getFileUrl } from "../utils/fileUtils";
 // Local components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import LibrarianAddBookModal from "./components/LibrarianAddBookModal";
 import LibrarianEditBookModal from "./components/LibrarianEditBookModal";
 import LibrarianManageBookshelvesModal from "./components/LibrarianManageBookshelvesModal";
@@ -481,6 +482,9 @@ export default function LibrarianManageBooks() {
     fileUrl={previewUrl}
     title={previewTitle}
    />
-  </>
- );
+      <div className="md:ml-52">
+     <Footer />
+    </div>
+   </>
+  );
 }

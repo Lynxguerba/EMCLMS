@@ -14,6 +14,7 @@ import { useTheme } from "@mui/material/styles";
 // Custom components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import CustomBox from "./components/CustomBox";
 import { SettingsSkeleton } from "./components/Skeletons";
 
@@ -210,6 +211,9 @@ export default function AdminSettings() {
 
       {/* Spacer at the Bottom */}
       <Box sx={{ height: { xs: "40px", md: "60px" } }}></Box>
-    </Box>
+        <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
   );
 }

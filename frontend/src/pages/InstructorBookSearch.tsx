@@ -28,6 +28,7 @@ import {
 // Components
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import { getFileUrl, forceDownload } from "../utils/fileUtils";
 import BorrowRequestModal from "./components/BorrowRequestModal";
 import { 
@@ -624,8 +625,11 @@ const InstructorBookSearch: React.FC = () => {
 
    {/* Drag overlay */}
    {isDragActive || dropzoneActive ? <DragOverlay /> : null}
-  </Box>
- );
+      <div className="md:ml-52">
+     <Footer />
+    </div>
+   </Box>
+  );
 };
 
 export default InstructorBookSearch;
