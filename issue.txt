@@ -1,0 +1,65 @@
+ASK: I currently maintaining a system in institute. Tech Stack is Django for backend, React for Frontend, and Postgres for DB Management. I use also a docker so that I am not worry to run any dependencies or requirements in my local machine. Prod Services used, Render for Backend, Vercel for Frontent and Supabase for Database. The problem is when I try to seed in the backend in the supabase is not updated. NOte: I use freemuim tier of all services but it works fine when I deploy it. now i want to update the data inside of the Supabase but it is not working. what are the main problem for this kind seeding?  
+
+
+ANSWER: 
+
+When you use **Docker** locally but connect your Django backend directly to a remote **Supabase** instance on the freemium tier, seeding often fails while standard app deployments work perfectly.
+
+Because you aren't seeing an explicit database crash, your seed command (`python manage.py loaddata` or a custom management command) is likely running into one of three common architectural bottlenecks between your local machine and remote Supabase instances.
+
+---
+
+## The Main Problems
+
+### 1. The SSL Enforcement and Connection String Mix-up
+
+Supabase strictly enforces SSL connections by default. When your Django app runs on Render, the server environment automatically handles SSL handshakes smoothly. From a local Docker container, if your `DATABASES` settings are not explicitly telling PostgreSQL to use SSL, the connection will drop or reject writes without cleanly warning you.
+
+* **The Fix:** You need to pass the SSL parameters directly into your Django database settings dictionary.
+
+### 2. Transaction Mode vs. Session Mode (Supavisor Pooler)
+
+Supabase provides two types of connection strings on its dashboard:
+
+* **Transaction Mode (Port 6543):** Great for serverless or handling API traffic from Render. *However*, transaction pooling **does not support** multi-statement seeding or long-held locks. If Django attempts to run a bulk seed transaction with temporary states over this port, Supabase will reject it.
+* **Session Mode (Port 5432):** Acts like a direct connection. **You must use Port 5432 or the Direct Connection String** when running heavy database operations like migrations or seeding from your local machine.
+
+### 3. Local Docker Network Restrictions (IPv4 vs IPv6)
+
+Supabase’s direct database connections default to **IPv6**. If your local Docker daemon or your local ISP is running strictly on an **IPv4** network, your local container won't be able to properly resolve or write to the remote Supabase database.
+
+---
+
+## How to Fix It in Your Django Setup
+
+Update your `settings.py` file to handle SSL and pool options safely when dealing with remote instances.
+
+```python
+import os
+import dj_database_url  # Highly recommended for managing Render/Supabase URLs
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
+
+# Ensure your local development or seed command explicitly uses SSL
+if not os.environ.get('DEVELOPMENT_LOCAL_DB'):  # If pointing to remote Supabase
+    DATABASES['default']['OPTIONS'] = {
+        'sslmode': 'require',
+        # Optional: If you hit a timeout during large seeds, extend it here:
+        'options': '-c statement_timeout=30000' # 30 seconds
+    }
+
+```
+
+### Checklist to run before your next seed attempt:
+
+1. **Check your `.env` Port:** Look at your `DATABASE_URL` or database host setup inside your local configuration. Ensure the port is set to **`5432`** (Session Mode) and **not** `6543`.
+2. **Explicitly Allow SSL:** If you are not using `dj_database_url`, make sure your manual `DATABASES` dict includes `'OPTIONS': {'sslmode': 'require'}`.
+3. **Are you trying to seed via Supabase CLI?** If you are bypasssing Django and trying to run `supabase db reset` or `supabase migration up` locally against production, the free tier will block it unless you have downloaded the project's custom SSL root certificate (`root.crt`) into your local environment.
+
+If you adjust the port to 5432 and force the `sslmode`, your seed file should populate the remote tables without getting silently dropped.

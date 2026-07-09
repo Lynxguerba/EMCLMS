@@ -1562,6 +1562,7 @@ def seed_accounting():
 
 # --- Main Function ---
 def main():
+    print("🚀 Starting database seeding... Please wait, this may take several minutes over a remote connection.")
     seed_users()
     seed_course_school_years()
     seed_courses()

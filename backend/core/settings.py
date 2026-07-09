@@ -202,6 +202,13 @@ DATABASES = {
     }
 }
 
+if "supabase" in database_url:
+    DATABASES["default"]["OPTIONS"] = {
+        "sslmode": "require",
+    }
+
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
