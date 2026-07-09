@@ -89,6 +89,10 @@ def prepare_public_schema_for_restore(db_url: str) -> None:
     try:
         conn.autocommit = True
         with conn.cursor() as cursor:
+            # IMPORTANT: When connecting via a Supabase pooler, CURRENT_USER is spoofed to the project ref.
+            # This causes event triggers (like pg_graphql's) to fail during DROP SCHEMA.
+            # We must explicitly SET ROLE to the real postgres role before executing DDL.
+            cursor.execute("SET ROLE postgres;")
             cursor.execute("DROP SCHEMA IF EXISTS public CASCADE;")
             cursor.execute("CREATE SCHEMA public AUTHORIZATION postgres;")
             cursor.execute("GRANT ALL ON SCHEMA public TO postgres;")
