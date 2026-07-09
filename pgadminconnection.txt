@@ -9,3 +9,19 @@ pgAdmin Web Interface Login
   Go to http://localhost:5050 in your web browser and enter:
   • Email:  admin@admin.com
   • Password:  root
+
+
+
+  DOCKER PROD COMMAND TO seed
+
+  Running Locally (Requires Mobile Hotspot)
+
+  If you switch your computer to an unrestricted network (like a mobile hotspot):
+
+  1. Run the migrations on your Supabase database:
+    docker compose exec -e DATABASE_URL="postgresql://postgres.zvuhyegwvrqqmwbdajon:kAAe5tDuMzgJ3wvO@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres" backend
+  python manage.py migrate
+
+  2. Run the seeding script:
+    docker compose exec -e DATABASE_URL="postgresql://postgres.zvuhyegwvrqqmwbdajon:kAAe5tDuMzgJ3wvO@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres" backend
+  python api/seeds.py
