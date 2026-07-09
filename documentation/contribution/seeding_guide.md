@@ -53,6 +53,9 @@ python backend/seeders/production/books.py
 ### "ModuleNotFoundError"
 This happens if you haven't activated your virtual environment. The environment contains all the necessary libraries like `django`, `sentence-transformers`, and `faker`.
 
+### Supabase migrate/seed not updating remote database
+If migrations or `api/seeds.py` run but Supabase stays empty, or commands fail against a remote Supabase instance, see the [Supabase Migrate & Seed Guide](./supabase_migrate_seed.md).
+
 ---
 
 ## ⚠️ Hard Reset: Wipe Tables and Start Over

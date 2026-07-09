@@ -58,9 +58,14 @@ Supabase provides a modern, high-performance managed PostgreSQL database with pr
 > The `pgvector` extension is already installed on Supabase by default. Django's initial migrations will automatically enable it when you deploy. You do not need to manually enable it.
 
 > [!NOTE]  
-> If you need to restore your SQL backup file (e.g., `backup_2026-06-24.dump`) to the production Supabase database, run the following command in your local command line (replace `[PROJECT_REF]` with your actual Supabase project reference ID):
+> **In-app backup and restore:** The Database Administration page backup/restore endpoints work with a Session Pooler `DATABASE_URL` on Render. Internally they normalize the connection to Supabase's direct host (`db.[PROJECT_REF].supabase.co`) and the real `postgres` role. Pooler usernames like `postgres.[PROJECT_REF]` are auth aliases only—they are not PostgreSQL roles and must not be used for `pg_dump`/`pg_restore`.
+>
+> **Cross-Supabase restore:** Backups created on one Supabase project (e.g. an old deployment) can be restored to a new project via System Restoration, because dumps use `--no-owner` and `--no-privileges`. Upload the `.dump` file from the old system to the new hosted instance after deploy.
+>
+> **Manual restore (CLI fallback):** If you need to restore outside the app, run the following locally (replace `[PROJECT_REF]` with your Supabase project reference ID). Use username `postgres`, not `postgres.[PROJECT_REF]`:
 > ```bash
-> pg_restore --no-owner --clean --no-privileges -h db.[PROJECT_REF].supabase.co -U postgres -d postgres -p 5432 <path_to_backup_file>
+> pg_restore --no-owner --no-privileges --clean --if-exists --schema=public --role=postgres \
+>   -h db.[PROJECT_REF].supabase.co -U postgres -d postgres -p 5432 <path_to_backup_file>
 > ```
 > *Note: If asked for a password, enter your Supabase database password.*
 

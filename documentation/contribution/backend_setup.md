@@ -37,6 +37,7 @@ Follow these steps to set up the Django development environment for EMCLMS.
     python manage.py migrate
     ```
     For instructions on how to populate your database with development or production data, see the [Seeding Guide](./seeding_guide.md).
+    For remote **Supabase** migrate/seed issues (pooler ports, Docker), see [Supabase Migrate & Seed](./supabase_migrate_seed.md).
 
 5.  **Running the Server:**
     ```bash

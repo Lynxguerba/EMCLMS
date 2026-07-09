@@ -28,6 +28,7 @@ Guides for setting up the project and contributing code.
 - [Frontend Setup](./contribution/frontend_setup.md)
 - [Testing Guide](./contribution/testing.md)
 - [Seeding Guide](./contribution/seeding_guide.md)
+- [Supabase Migrate & Seed](./contribution/supabase_migrate_seed.md)
 - [Coding Standards](./contribution/coding_standards.md)
 
 ---

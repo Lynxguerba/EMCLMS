@@ -63,3 +63,8 @@ if not os.environ.get('DEVELOPMENT_LOCAL_DB'):  # If pointing to remote Supabase
 3. **Are you trying to seed via Supabase CLI?** If you are bypasssing Django and trying to run `supabase db reset` or `supabase migration up` locally against production, the free tier will block it unless you have downloaded the project's custom SSL root certificate (`root.crt`) into your local environment.
 
 If you adjust the port to 5432 and force the `sslmode`, your seed file should populate the remote tables without getting silently dropped.
+
+
+Note: this is local development
+super admin password hash:
+bcrypt_sha256$$2b$12$QheAI/90sW9.YmeIQxwcX.7ImRs5SgIr8XOxflgqCLsHO.mwCAPq6

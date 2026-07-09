@@ -6,8 +6,12 @@ from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import MultiPartParser
 from ..models import User
 from ..utils import is_superadmin
-from django.db import connection
-from django.conf import settings
+from ..utils.db_admin import (
+    get_database_url,
+    is_pg_restore_failure,
+    normalize_supabase_direct_url,
+    prepare_public_schema_for_restore,
+)
 
 @api_view(["POST"])
 @parser_classes([MultiPartParser])
@@ -31,41 +35,11 @@ def admin_db_restore(request):
     if not backup_file:
         return HttpResponse("No backup file provided", status=400)
 
-    # Get database connection string from settings or environment
-    db_url = os.environ.get("DATABASE_URL")
-    
-    if not db_url:
-        # Fallback to reconstructing from settings
-        db_config = settings.DATABASES.get("default")
-        if db_config:
-            user = db_config.get("USER")
-            password = db_config.get("PASSWORD")
-            host = db_config.get("HOST")
-            port = db_config.get("PORT")
-            name = db_config.get("NAME")
-            if all([user, password, host, name]):
-                db_url = f"postgresql://{user}:{password}@{host}:{port or 5432}/{name}"
-
+    db_url = get_database_url()
     if not db_url:
         return HttpResponse("Database configuration not found", status=500)
 
-    if db_url.startswith("postgres://"):
-        db_url = db_url.replace("postgres://", "postgresql://", 1)
-
-    # Convert Supabase connection pooler URL to direct connection URL
-    # pg_restore must use the direct connection, otherwise it fails with 'role does not exist' 
-    # or times out because of the connection pooler.
-    if "pooler.supabase.com" in db_url:
-        from urllib.parse import urlparse, urlunparse
-        parsed = urlparse(db_url)
-        username = parsed.username
-        password = parsed.password
-        if username and "." in username:
-            user_part, project_ref = username.split(".", 1)
-            # Create direct connection netloc: db.[project_ref].supabase.co:5432
-            new_netloc = f"{user_part}:{password}@db.{project_ref}.supabase.co:5432"
-            parsed = parsed._replace(netloc=new_netloc)
-            db_url = urlunparse(parsed)
+    db_url = normalize_supabase_direct_url(db_url)
 
     # Save uploaded file to a temporary location
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
@@ -80,36 +54,16 @@ def admin_db_restore(request):
     request.session.save = lambda *args, **kwargs: None
 
     try:
-        # Step 1: Drop and recreate the public schema
-        # Extract the base username from the URL (handles Supabase pooler format: user.project)
-        from urllib.parse import urlparse
-        parsed = urlparse(db_url)
-        base_user = parsed.username
-        if base_user and "." in base_user:
-            base_user = base_user.split(".")[0]
-        elif not base_user:
-            base_user = "postgres"
-
-        with connection.cursor() as cursor:
-            # Note: CASCADE will drop all objects in the schema
-            cursor.execute("DROP SCHEMA IF EXISTS public CASCADE;")
-            cursor.execute("CREATE SCHEMA public;")
-            
-            # Grant privileges to the base database user (e.g. 'postgres')
-            # We avoid CURRENT_USER because connection poolers sometimes report a username 
-            # that doesn't actually exist as a role in the underlying pg_roles catalog.
-            cursor.execute(f'GRANT ALL ON SCHEMA public TO "{base_user}";')
-            cursor.execute("GRANT ALL ON SCHEMA public TO public;")
+        # Step 1: Drop and recreate the public schema via direct postgres connection.
+        # Django's pooler connection can report CURRENT_USER as postgres.<project_ref>,
+        # which is not a real role and breaks CREATE SCHEMA.
+        prepare_public_schema_for_restore(db_url)
 
         # Step 2: Run pg_restore
-        # --clean: clean (drop) database objects before recreating
-        # --if-exists: use IF EXISTS when dropping objects
-        # --no-owner: skip restoration of object ownership
-        # --no-privileges: skip restoration of access privileges
-        # --schema=public: restore only the public schema
         command = [
             "pg_restore",
             "-d", db_url,
+            "--role=postgres",
             "--clean",
             "--if-exists",
             "--no-owner",
@@ -118,8 +72,6 @@ def admin_db_restore(request):
             tmp_path
         ]
         
-        # Use subprocess.Popen to avoid buffering large outputs in memory
-        # We'll set a long timeout (matching gunicorn)
         try:
             process = subprocess.Popen(
                 command, 
@@ -131,14 +83,20 @@ def admin_db_restore(request):
             # Wait for completion with a timeout (290s, slightly less than Gunicorn's 300s)
             stdout, stderr = process.communicate(timeout=290)
             
-            # Cleanup temp file
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
 
-            if process.returncode != 0:
-                # pg_restore often throws warnings (exit code 1) for benign issues 
-                # like mismatched Postgres version parameters. We consider it a success with warnings.
-                return HttpResponse(f"Database restored, but with some warnings (usually safe to ignore): {stderr}", status=200)
+            if is_pg_restore_failure(process.returncode, stderr):
+                return HttpResponse(
+                    f"Database restoration failed: {stderr or stdout}",
+                    status=500,
+                )
+
+            if process.returncode == 1 and stderr:
+                return HttpResponse(
+                    f"Database restored, but with some warnings (usually safe to ignore): {stderr}",
+                    status=200,
+                )
 
             return HttpResponse("Database restored successfully", status=200)
 

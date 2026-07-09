@@ -5,8 +5,8 @@ from django.http import HttpResponse, FileResponse
 from rest_framework.decorators import api_view
 from ..models import User
 from ..utils import is_admin_or_superadmin
+from ..utils.db_admin import get_database_url, normalize_supabase_direct_url
 from django.utils import timezone
-from django.conf import settings
 
 @api_view(["GET"])
 def admin_db_backup(request):
@@ -25,41 +25,19 @@ def admin_db_backup(request):
     if not is_admin_or_superadmin(user):
         return HttpResponse("Forbidden", status=403)
 
-    # Get database connection string from settings or environment
-    # We prefer the raw DATABASE_URL if available as it's already a valid URI
-    db_url = os.environ.get("DATABASE_URL")
-    
-    if not db_url:
-        # Fallback to reconstructing from settings
-        db_config = settings.DATABASES.get("default")
-        if db_config:
-            user = db_config.get("USER")
-            password = db_config.get("PASSWORD")
-            host = db_config.get("HOST")
-            port = db_config.get("PORT")
-            name = db_config.get("NAME")
-            if all([user, password, host, name]):
-                db_url = f"postgresql://{user}:{password}@{host}:{port or 5432}/{name}"
-
+    db_url = get_database_url()
     if not db_url:
         return HttpResponse("Database configuration not found", status=500)
 
-    # Normalize db_url to use 'postgresql://' scheme
-    if db_url.startswith("postgres://"):
-        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    db_url = normalize_supabase_direct_url(db_url)
 
     timestamp = timezone.now().strftime("%Y%m%d_%H%M%S")
     filename = f"backup_{timestamp}.dump"
     
-    # Use a temporary file to store the dump
     temp_dir = tempfile.gettempdir()
     temp_file_path = os.path.join(temp_dir, filename)
 
     try:
-        # pg_dump command as requested
-        # -Fc: custom-format archive
-        # --no-owner: skip restoration of object ownership
-        # --no-privileges: skip restoration of access privileges (grant/revoke)
         command = [
             "pg_dump",
             db_url,
@@ -77,8 +55,6 @@ def admin_db_backup(request):
             error_message = result.stderr.decode(errors='replace') if result.stderr else "Unknown error"
             return HttpResponse(f"Backup failed: {error_message}", status=500)
 
-        # Serve the file for download
-        # We use a custom FileResponse that deletes the file after it's closed
         class DeletingFileResponse(FileResponse):
             def close(self):
                 super().close()
