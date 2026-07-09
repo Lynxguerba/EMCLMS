@@ -36,12 +36,14 @@ def normalize_supabase_direct_url(db_url: str) -> str:
     postgres role. Pooler usernames like postgres.<project_ref> are auth
     aliases and must not be used for pg_dump/pg_restore or DDL.
     """
+    from urllib.parse import urlparse, urlunparse, unquote, quote
+
     if db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql://", 1)
 
     parsed = urlparse(db_url)
-    username = parsed.username or ""
-    password = parsed.password or ""
+    username = unquote(parsed.username or "")
+    password = unquote(parsed.password or "")
     host = parsed.hostname or ""
     port = parsed.port or 5432
     dbname = parsed.path.lstrip("/") or "postgres"
@@ -62,10 +64,13 @@ def normalize_supabase_direct_url(db_url: str) -> str:
             project_ref = host[len("db.") : -len(".supabase.co")]
         username = "postgres"
 
-    if password:
-        netloc = f"{username}:{password}@{host}:{port}"
-    elif username:
-        netloc = f"{username}@{host}:{port}"
+    safe_user = quote(username)
+    safe_pass = quote(password)
+
+    if safe_pass:
+        netloc = f"{safe_user}:{safe_pass}@{host}:{port}"
+    elif safe_user:
+        netloc = f"{safe_user}@{host}:{port}"
     else:
         netloc = f"{host}:{port}"
 
