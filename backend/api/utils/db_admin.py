@@ -32,9 +32,9 @@ def get_database_url() -> str | None:
 
 def normalize_supabase_direct_url(db_url: str) -> str:
     """
-    Normalize a Supabase DATABASE_URL to a direct connection using the real
-    postgres role. Pooler usernames like postgres.<project_ref> are auth
-    aliases and must not be used for pg_dump/pg_restore or DDL.
+    Normalize a Supabase DATABASE_URL.
+    Retains pooler URLs (IPv4) but ensures session mode (5432).
+    For direct URLs (IPv6), ensures username is stripped of the project ref.
     """
     from urllib.parse import urlparse, urlunparse, unquote, quote
 
@@ -47,22 +47,19 @@ def normalize_supabase_direct_url(db_url: str) -> str:
     host = parsed.hostname or ""
     port = parsed.port or 5432
     dbname = parsed.path.lstrip("/") or "postgres"
-    project_ref = None
-
-    if username and "." in username:
-        user_part, ref = username.split(".", 1)
-        if user_part == "postgres":
-            project_ref = ref
-            username = "postgres"
 
     if "pooler.supabase.com" in host:
-        if project_ref:
-            host = f"db.{project_ref}.supabase.co"
-            port = 5432
+        # Supavisor pooler needs the project ref in the username to route correctly.
+        # We must enforce port 5432 (session pooler) as transaction pooler (6543) 
+        # may break pg_dump/pg_restore.
+        port = 5432
     elif host.startswith("db.") and host.endswith(".supabase.co"):
-        if not project_ref:
-            project_ref = host[len("db.") : -len(".supabase.co")]
-        username = "postgres"
+        # Direct connection (IPv6). The direct PostgreSQL instance does NOT
+        # recognize the pooler alias (postgres.<project_ref>).
+        if username and "." in username:
+            user_part, _ = username.split(".", 1)
+            if user_part == "postgres":
+                username = "postgres"
 
     safe_user = quote(username)
     safe_pass = quote(password)

@@ -11,5 +11,6 @@ pgAdmin Web Interface Login
   • Password:  root
 
 
-
-  
+this is for local testing development:
+superadmin:
+bcrypt_sha256$$2b$12$n6Dr60D6CHdSgdZKwAD3sOr9Khjtc4a/deKxn1qqccOE5vlAfe2QC

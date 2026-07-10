@@ -257,3 +257,7 @@ Code builds and runs correctly.
 1. Attempt a database restoration on the production system.
 2. The schema preparation should now successfully drop the `public` schema without throwing the event trigger role error.
 3. The restore process should complete successfully.
+
+
+
+PROOBLEM 2: Error during restoration: connection to server at "db.zvuhyegwvrqqmwbdajon.supabase.co" (2406:da14:1d4f:7400:7ede:6ced:1438:ecc), port 5432 failed: Network is unreachable Is the server running on that host and accepting TCP/IP connections?
