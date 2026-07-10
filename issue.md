@@ -261,3 +261,4 @@ Code builds and runs correctly.
 
 
 PROOBLEM 2: Error during restoration: connection to server at "db.zvuhyegwvrqqmwbdajon.supabase.co" (2406:da14:1d4f:7400:7ede:6ced:1438:ecc), port 5432 failed: Network is unreachable Is the server running on that host and accepting TCP/IP connections?
+PROOBLEM 3: Now there is another issue, In the System, the System Restoring are accepted the file but when I look at the supabase all the data are wiped out.

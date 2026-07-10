@@ -59,8 +59,8 @@ def admin_db_restore(request):
         # which is not a real role and breaks CREATE SCHEMA.
         prepare_public_schema_for_restore(db_url)
 
-        # Step 2: Run pg_restore
-        command = [
+        # Step 2: Restore Schema Only
+        schema_command = [
             "pg_restore",
             "-d", db_url,
             "--role=postgres",
@@ -68,43 +68,52 @@ def admin_db_restore(request):
             "--if-exists",
             "--no-owner",
             "--no-privileges",
+            "--schema-only",
             "--schema=public",
             tmp_path
         ]
         
+        # Step 3: Restore Data Only (with triggers disabled to bypass FK checks)
+        data_command = [
+            "pg_restore",
+            "-d", db_url,
+            "--role=postgres",
+            "--disable-triggers",
+            "--data-only",
+            "--schema=public",
+            tmp_path
+        ]
+
+        def run_restore_command(cmd):
+            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            try:
+                stdout, stderr = process.communicate(timeout=290)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                raise TimeoutError("Database restoration timed out. The database might be in an inconsistent state.")
+                
+            if is_pg_restore_failure(process.returncode, stderr):
+                raise Exception(f"Fatal error: {stderr or stdout}")
+            if process.returncode == 1 and stderr:
+                raise Warning(f"Completed with warnings: {stderr}")
+
         try:
-            process = subprocess.Popen(
-                command, 
-                stdout=subprocess.PIPE, 
-                stderr=subprocess.PIPE,
-                text=True
-            )
-            
-            # Wait for completion with a timeout (290s, slightly less than Gunicorn's 300s)
-            stdout, stderr = process.communicate(timeout=290)
+            run_restore_command(schema_command)
+            run_restore_command(data_command)
             
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
-
-            if is_pg_restore_failure(process.returncode, stderr):
-                return HttpResponse(
-                    f"Database restoration failed: {stderr or stdout}",
-                    status=500,
-                )
-
-            if process.returncode == 1 and stderr:
-                return HttpResponse(
-                    f"Database restored, but with some warnings (usually safe to ignore): {stderr}",
-                    status=200,
-                )
-
             return HttpResponse("Database restored successfully", status=200)
 
-        except subprocess.TimeoutExpired:
-            process.kill()
+        except Warning as w:
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
-            return HttpResponse("Database restoration timed out. The database might be in an inconsistent state.", status=500)
+            return HttpResponse(str(w), status=400)
+            
+        except TimeoutError as te:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            return HttpResponse(str(te), status=500)
 
     except Exception as e:
         if os.path.exists(tmp_path):
