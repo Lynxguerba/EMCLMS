@@ -39,3 +39,47 @@ export const forceDownload = async (url: string, fileName: string) => {
     window.open(url, "_blank");
   }
 };
+
+export type RemoteFile = {
+  id?: number;
+  file?: string;
+  file_url?: string;
+  file_name?: string;
+};
+
+export const getRemoteFileUrl = (file: string | RemoteFile): string => {
+  if (typeof file === "string") return getFileUrl(file);
+  return getFileUrl(file.file_url || file.file || "");
+};
+
+export const getRemoteFileName = (file: string | RemoteFile): string => {
+  if (typeof file === "string") return file.split("/").pop() || "download";
+  return (
+    file.file_name ||
+    (file.file_url || file.file || "").split("/").pop() ||
+    "download"
+  );
+};
+
+export const getContentFileActionUrl = (
+  file: string | RemoteFile,
+  action: "open" | "download"
+): string => {
+  if (typeof file !== "string" && file.id) {
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
+    const normalizedBaseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+    return `${normalizedBaseUrl}/api/content-files/${file.id}/${action}/`;
+  }
+
+  return getRemoteFileUrl(file);
+};
+
+export const openDirectFile = (
+  file: string | RemoteFile,
+  action: "open" | "download" = "open"
+) => {
+  const url = getContentFileActionUrl(file, action);
+  if (!url) return;
+
+  window.open(url, "_blank", "noopener,noreferrer");
+};

@@ -1,0 +1,140 @@
+from urllib.parse import quote
+
+from django.http import HttpResponseRedirect
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from ..models import ContentFile, Enrollment, FileDownload, User
+
+
+def build_file_url(request, file_field):
+    if not file_field:
+        return None
+
+    url = file_field.url
+    if url.startswith(("http://", "https://", "//")):
+        return f"https:{url}" if url.startswith("//") else url
+
+    return request.build_absolute_uri(url)
+
+
+def get_file_name(file_field):
+    if not file_field:
+        return ""
+
+    return file_field.name.split("/")[-1]
+
+
+def serialize_content_file(request, content_file):
+    file_url = build_file_url(request, content_file.file)
+    file_name = get_file_name(content_file.file)
+
+    return {
+        "id": content_file.id,
+        "file": file_url,
+        "file_url": file_url,
+        "file_name": file_name,
+        "uploaded_at": content_file.uploaded_at,
+    }
+
+
+def serialize_submission_file(request, submission_file):
+    file_url = build_file_url(request, submission_file.file)
+    file_name = get_file_name(submission_file.file)
+
+    return {
+        "id": submission_file.id,
+        "file_url": file_url,
+        "file_name": file_name,
+        "uploaded_at": getattr(submission_file, "uploaded_at", None),
+    }
+
+
+def cloudinary_attachment_url(url, file_name):
+    if not url or "/upload/" not in url:
+        return url
+
+    attachment_flag = "fl_attachment"
+    if file_name:
+        attachment_flag = f"{attachment_flag}:{quote(file_name)}"
+
+    if f"/upload/{attachment_flag}/" in url or "/upload/fl_attachment/" in url:
+        return url
+
+    return url.replace("/upload/", f"/upload/{attachment_flag}/", 1)
+
+
+def user_can_access_content_file(user, content_file):
+    course = content_file.content.section.course
+
+    if user.user_type in ["Administrator", "Superadmin"]:
+        return True
+
+    if user.user_type == "Instructor":
+        return course.instructor_id == user.user_id
+
+    if user.user_type == "Student":
+        return Enrollment.objects.filter(student=user, course=course).exists()
+
+    return False
+
+
+def get_authorized_content_file(request, file_id):
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return None, Response({"detail": "Unauthorized"}, status=401)
+
+    try:
+        user = User.objects.get(user_id=user_id)
+    except User.DoesNotExist:
+        return None, Response({"detail": "Unauthorized"}, status=401)
+
+    try:
+        content_file = ContentFile.objects.select_related(
+            "content__section__course__instructor"
+        ).get(id=file_id)
+    except ContentFile.DoesNotExist:
+        return None, Response({"detail": "File not found"}, status=404)
+
+    if not user_can_access_content_file(user, content_file):
+        return None, Response({"detail": "Forbidden"}, status=403)
+
+    return (user, content_file), None
+
+
+@api_view(["GET"])
+def open_content_file(request, file_id):
+    result, error = get_authorized_content_file(request, file_id)
+    if error:
+        return error
+
+    _, content_file = result
+    file_url = build_file_url(request, content_file.file)
+    if not file_url:
+        return Response({"detail": "File URL not available"}, status=404)
+
+    return HttpResponseRedirect(file_url)
+
+
+@api_view(["GET"])
+def download_content_file(request, file_id):
+    result, error = get_authorized_content_file(request, file_id)
+    if error:
+        return error
+
+    user, content_file = result
+    if user.user_type == "Student":
+        FileDownload.objects.get_or_create(
+            content=content_file.content,
+            user=user,
+        )
+
+    file_url = build_file_url(request, content_file.file)
+    if not file_url:
+        return Response({"detail": "File URL not available"}, status=404)
+
+    download_url = cloudinary_attachment_url(
+        file_url,
+        get_file_name(content_file.file),
+    )
+    return HttpResponseRedirect(download_url)

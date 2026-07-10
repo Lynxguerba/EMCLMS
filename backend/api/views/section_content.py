@@ -2,6 +2,7 @@ from django.db.models import Count, Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from ..models import Section, Content, User, FileDownload, Grade
+from .file_helpers import serialize_content_file
 
 
 @api_view(["GET"])
@@ -37,11 +38,7 @@ def section_content(request, section_id):
     data = []
     for content in contents:
         files = [
-            {
-                "id": f.id,
-                "file": request.build_absolute_uri(f.file.url),
-                "uploaded_at": f.uploaded_at,
-            }
+            serialize_content_file(request, f)
             for f in content.files.all()
             if f.file
         ]

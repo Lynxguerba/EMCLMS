@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from ..models import Content, Grade, User, SubmissionFile
 from django.db import transaction
 from django.utils import timezone
+from .file_helpers import serialize_submission_file
 
 
 @api_view(["POST"])
@@ -79,11 +80,7 @@ def student_submit_activity_files(request, content_id):
 
     # Build response with updated submission files
     files_data = [
-        {
-            "id": f.id,
-            "file_name": f.file.name.split("/")[-1],
-            "file_url": request.build_absolute_uri(f.file.url),
-        }
+        serialize_submission_file(request, f)
         for f in grade.submission_files.all()
     ]
 

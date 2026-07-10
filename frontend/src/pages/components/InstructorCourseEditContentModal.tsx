@@ -439,9 +439,9 @@ function InstructorCourseEditContentModal({
                   <div className="mt-3 space-y-2">
                     {/* Existing Files */}
                     {(contentToEdit.files || []).map((f: any, index: number) => {
-                      const filename = f.file
+                      const filename = f.file_name || (f.file
                         ? f.file.split("/").pop()
-                        : f.split("/").pop();
+                        : f.split("/").pop());
 
                       return (
                         <div

@@ -1,7 +1,8 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from ..models import Content, ContentFile, Course, Enrollment, User, Grade
+from ..models import Content, Course, Enrollment, User, Grade
+from .file_helpers import serialize_content_file
 
 
 @api_view(["GET"])
@@ -45,11 +46,11 @@ def student_get_contents_for_course(request, course_id):
         data = []
 
         for content in contents:
-            files = [  
-                request.build_absolute_uri(f.file.url)  
-                for f in content.files.all()  
-                if f.file  
-            ]  
+            files = [
+                serialize_content_file(request, f)
+                for f in content.files.all()
+                if f.file
+            ]
 
             # Get grade status from pre-fetched map
             grade_status = grade_map.get(content.content_id)

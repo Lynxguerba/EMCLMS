@@ -5,6 +5,7 @@ from decimal import Decimal
 from django.db import transaction
 from django.utils import timezone
 from datetime import datetime
+from .file_helpers import serialize_content_file
 
 
 @api_view(["PUT"])
@@ -91,11 +92,7 @@ def instructor_update_content(request, content_id):
 
     # --- Prepare response with related files ---
     files_data = [
-        {
-            "id": f.id,
-            "file": f.file.url,
-            "uploaded_at": f.uploaded_at,
-        }
+        serialize_content_file(request, f)
         for f in content.files.all()
     ]
 

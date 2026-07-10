@@ -149,3 +149,4 @@ from .admin_db_restore import admin_db_restore
 from .record_download import record_download
 from .record_book_access import record_book_access
 from .librarian_book_analytics import get_most_accessed_books
+from .file_helpers import open_content_file, download_content_file

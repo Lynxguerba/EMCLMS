@@ -33,8 +33,13 @@ import {
   File,
   Megaphone,
 } from "lucide-react";
-import { getFileUrl, forceDownload } from "../../utils/fileUtils";
-import axios from "axios";
+import {
+  getFileUrl,
+  forceDownload,
+  getRemoteFileName,
+  openDirectFile,
+  type RemoteFile,
+} from "../../utils/fileUtils";
 
 // Interfaces
 interface ContentItem {
@@ -48,7 +53,7 @@ interface ContentItem {
   due_date?: string | null;
   is_active?: boolean | null;
   content_description?: string | null;
-  files?: string[];
+  files?: Array<string | RemoteFile>;
 }
 
 interface SubmissionStatus {
@@ -335,28 +340,18 @@ export default function StudentCourseContentModal({
               selectedContent.files.length > 0 && (
                 <div className="space-y-2">
                   {selectedContent.files.map((filePath, index) => {
-                    const fileUrl = getFileUrl(filePath);
-                    const fileName = filePath.split("/").pop() || "download";
+                    const fileName = getRemoteFileName(filePath);
                     return (
                       <button
                         key={index}
-                        onClick={() => {
-                          forceDownload(fileUrl, fileName);
-                          if (selectedContent?.content_id) {
-                            axios.post(
-                              `${import.meta.env.VITE_API_BASE_URL}/api/student/content/${selectedContent.content_id}/record-download/`,
-                              {},
-                              { withCredentials: true }
-                            ).catch(err => console.error("Error recording download:", err));
-                          }
-                        }}
+                        onClick={() => openDirectFile(filePath, "download")}
                         className="w-full flex items-center gap-3 p-3 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-400 hover:shadow-md transition-all duration-200 group"
                       >
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
                           <FileText className="w-5 h-5 text-white" />
                         </div>
                         <span className="flex-1 text-left text-sm font-medium text-gray-700 truncate">
-                          {filePath.split("/").pop()}
+                          {fileName}
                         </span>
                         <Download className="w-4 h-4 text-gray-400 group-hover:text-blue-600" />
                       </button>
@@ -378,28 +373,18 @@ export default function StudentCourseContentModal({
                   {selectedContent?.files?.length ? (
                     <div className="space-y-2">
                       {selectedContent.files.map((filePath, index) => {
-                        const fileUrl = getFileUrl(filePath);
-                        const fileName = filePath.split("/").pop() || "download";
+                        const fileName = getRemoteFileName(filePath);
                         return (
                           <button
                             key={index}
-                            onClick={() => {
-                          forceDownload(fileUrl, fileName);
-                          if (selectedContent?.content_id) {
-                            axios.post(
-                              `${import.meta.env.VITE_API_BASE_URL}/api/student/content/${selectedContent.content_id}/record-download/`,
-                              {},
-                              { withCredentials: true }
-                            ).catch(err => console.error("Error recording download:", err));
-                          }
-                        }}
+                            onClick={() => openDirectFile(filePath, "download")}
                             className="w-full flex items-center gap-3 p-3 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-400 hover:shadow-md transition-all duration-200 group"
                           >
                             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
                               <FileText className="w-5 h-5 text-white" />
                             </div>
                             <span className="flex-1 text-left text-sm font-medium text-gray-700 truncate">
-                              {filePath.split("/").pop()}
+                              {fileName}
                             </span>
                             <Download className="w-4 h-4 text-gray-400 group-hover:text-blue-600" />
                           </button>

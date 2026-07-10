@@ -8,7 +8,10 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { InstructorCourse_Content as Content } from "../../types/content";
-import { getFileUrl, forceDownload } from "../../utils/fileUtils";
+import {
+  getRemoteFileName,
+  openDirectFile,
+} from "../../utils/fileUtils";
 
 type Props = {
   open: boolean;
@@ -127,14 +130,12 @@ export default function InstructorCourseContentModal({
 
                 <div className="space-y-2">
                   {selectedContent.files?.map((file: any, index: number) => {
-                    const filePath = file.file || file;
-                    const fileUrl = getFileUrl(filePath);
-                    const fileName = filePath.split("/").pop();
+                    const fileName = getRemoteFileName(file);
 
                     return (
                       <button
                         key={index}
-                        onClick={() => forceDownload(fileUrl, fileName || "download")}
+                        onClick={() => openDirectFile(file, "open")}
                         className="w-full flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition-all duration-200 group"
                       >
                         <div className="bg-indigo-100 p-2 rounded-lg group-hover:bg-indigo-200 transition-colors">

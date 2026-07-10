@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from ..models import Content, Grade, User, SubmissionFile
+from .file_helpers import serialize_submission_file
 
 
 @api_view(["GET"])
@@ -22,11 +23,7 @@ def student_get_submission(request, content_id):
         grade = Grade.objects.get(user=user, content=content)
         submission_files = SubmissionFile.objects.filter(grade=grade)
         files = [
-            {
-                "id": file.id,
-                "file_name": file.file.name.split("/")[-1],
-                "file_url": request.build_absolute_uri(file.file.url),
-            }
+            serialize_submission_file(request, file)
             for file in submission_files
         ]
     except Grade.DoesNotExist:

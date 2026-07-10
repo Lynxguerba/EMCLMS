@@ -16,9 +16,11 @@ export interface Content {
 // for InstructorCourse.tsx and child
 
 export interface ContentFile {
-  path: any; // Add this interface
+  path?: any; // kept for backward compatibility with older callers
   id: number;
   file: string;
+  file_url?: string;
+  file_name?: string;
   uploaded_at: string;
 }
 

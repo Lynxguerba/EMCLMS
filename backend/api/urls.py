@@ -275,6 +275,8 @@ urlpatterns = [
     path("api/courses/<int:course_id>/sections/", views.course_sections),
     path("api/courses/<int:course_id>/sections/add/", views.add_section),
     path("api/sections/<int:section_id>/content/", views.section_content),
+    path("api/content-files/<int:file_id>/open/", views.open_content_file, name="open_content_file"),
+    path("api/content-files/<int:file_id>/download/", views.download_content_file, name="download_content_file"),
     # --- Content and Submission Management (General) ---
     path("api/content/<int:content_id>/submit/", views.submit_activity),
     path("api/content/<int:content_id>/submission/", views.get_submission),

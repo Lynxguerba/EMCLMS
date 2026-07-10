@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from ..models import Content, Enrollment, Section, User, Grade
+from .file_helpers import build_file_url, serialize_content_file
 
 
 @api_view(["GET"])
@@ -55,9 +56,9 @@ def student_get_all_contents(request):
 
             # Get first file from pre-fetched files
             all_files = list(c.files.all())
-            file_url = all_files[0].file.url if all_files else None
+            file_url = build_file_url(request, all_files[0].file) if all_files else None
             files = [
-                request.build_absolute_uri(f.file.url)
+                serialize_content_file(request, f)
                 for f in all_files
                 if f.file
             ]

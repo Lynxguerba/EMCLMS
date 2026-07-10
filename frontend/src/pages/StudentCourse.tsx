@@ -51,6 +51,7 @@ import WeeklyScheduleGrid from "./components/WeeklyScheduleGrid";
 
 // Axios for HTTP requests
 import axios from "axios";
+import type { RemoteFile } from "../utils/fileUtils";
 
 // Interfaces
 interface SectionItem {
@@ -74,7 +75,7 @@ interface ContentItem {
  due_date?: string | null;
  is_active?: boolean | null;
  content_description?: string | null;
- files?: string[];
+ files?: Array<string | RemoteFile>;
  grade_status?: string | null;
 }
 

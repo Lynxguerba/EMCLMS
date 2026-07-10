@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from ..models import Grade, Content, User, SubmissionFile
+from ..models import Grade, Content, User
+from .file_helpers import serialize_submission_file
 
 
 @api_view(["GET"])
@@ -34,11 +35,7 @@ def get_instructor_grades(request, content_id):
     grade_data = []
     for g in grades:
         submission_files = [
-            {
-                "id": f.id,
-                "file_url": f.file.url,
-                "uploaded_at": f.uploaded_at,
-            }
+            serialize_submission_file(request, f)
             for f in g.submission_files.all()
         ]
 

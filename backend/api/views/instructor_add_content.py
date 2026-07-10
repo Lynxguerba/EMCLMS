@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from ..models import User, Content, Section, ContentFile, Enrollment, Grade, Notification
+from .file_helpers import serialize_content_file
 
 
 @api_view(["POST"])
@@ -129,11 +130,7 @@ def instructor_add_content(request):
 
     # --- Prepare response with related files ---
     files_data = [
-        {
-            "id": f.id,
-            "file": f.file.url,
-            "uploaded_at": f.uploaded_at,
-        }
+        serialize_content_file(request, f)
         for f in new_content.files.all()
     ]
 
