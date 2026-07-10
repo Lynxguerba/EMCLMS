@@ -1,4 +1,5 @@
 from urllib.parse import quote
+import urllib.parse
 
 from django.http import HttpResponseRedirect
 from rest_framework.decorators import api_view
@@ -7,9 +8,25 @@ from rest_framework.response import Response
 from ..models import ContentFile, Enrollment, FileDownload, User
 
 
-def build_file_url(request, file_field):
+def build_file_url(request, file_field, attachment=False, filename=None):
     if not file_field:
         return None
+
+    try:
+        storage_class = file_field.storage.__class__.__name__
+        if "Cloudinary" in storage_class:
+            from cloudinary.utils import cloudinary_url
+            resource_type = "raw" if "Raw" in storage_class else "image"
+            options = {"resource_type": resource_type, "sign_url": True}
+            if attachment and filename:
+                options["flags"] = f"attachment:{urllib.parse.quote(filename)}"
+            url, _ = cloudinary_url(file_field.name, **options)
+            if url:
+                if url.startswith(("http://", "https://", "//")):
+                    return f"https:{url}" if url.startswith("//") else url
+                return request.build_absolute_uri(url)
+    except Exception:
+        pass
 
     url = file_field.url
     if url.startswith(("http://", "https://", "//")):
@@ -113,7 +130,7 @@ def open_content_file(request, file_id):
     if not file_url:
         return Response({"detail": "File URL not available"}, status=404)
 
-    return HttpResponseRedirect(file_url)
+    return Response({"url": file_url})
 
 
 @api_view(["GET"])
@@ -129,12 +146,13 @@ def download_content_file(request, file_id):
             user=user,
         )
 
-    file_url = build_file_url(request, content_file.file)
-    if not file_url:
+    file_name = get_file_name(content_file.file)
+    download_url = build_file_url(request, content_file.file, attachment=True, filename=file_name)
+    if not download_url:
         return Response({"detail": "File URL not available"}, status=404)
 
-    download_url = cloudinary_attachment_url(
-        file_url,
-        get_file_name(content_file.file),
-    )
-    return HttpResponseRedirect(download_url)
+    # fallback if build_file_url didn't handle attachment (e.g. not Cloudinary)
+    if "Cloudinary" not in content_file.file.storage.__class__.__name__:
+        download_url = cloudinary_attachment_url(download_url, file_name)
+
+    return Response({"url": download_url})
