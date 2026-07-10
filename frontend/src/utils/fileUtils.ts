@@ -22,6 +22,29 @@ export const getFileUrl = (path: string | null | undefined): string => {
 };
 
 export const forceDownload = async (url: string, fileName: string) => {
+  // Handle Cloudinary URLs directly to avoid CORS errors with fetch()
+  // and popup blocker issues with async window.open()
+  if (url.includes("cloudinary.com")) {
+    let downloadUrl = url;
+    
+    // Inject fl_attachment to force Cloudinary to set Content-Disposition: attachment
+    if (downloadUrl.includes("/upload/") && !downloadUrl.includes("fl_attachment")) {
+      downloadUrl = downloadUrl.replace("/upload/", "/upload/fl_attachment/");
+    }
+    
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = fileName || "download";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    
+    // Synchronous click avoids popup blockers
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return;
+  }
+
   try {
     const response = await fetch(url);
     const blob = await response.blob();
@@ -35,7 +58,14 @@ export const forceDownload = async (url: string, fileName: string) => {
     window.URL.revokeObjectURL(blobUrl);
   } catch (error) {
     console.error("Download failed:", error);
-    // Fallback: try opening in new tab if blob download fails
-    window.open(url, "_blank");
+    // Fallback: synchronous-like click if blob download fails
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName || "download";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 };
