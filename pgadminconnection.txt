@@ -14,3 +14,7 @@ pgAdmin Web Interface Login
 this is for local testing development:
 superadmin:
 bcrypt_sha256$$2b$12$n6Dr60D6CHdSgdZKwAD3sOr9Khjtc4a/deKxn1qqccOE5vlAfe2QC
+
+Seeding: 
+cd backend
+venv\Scripts\python.exe manage.py migrate; $env:PYTHONIOENCODING='utf-8'; venv\Scripts\python.exe api\seeds.py

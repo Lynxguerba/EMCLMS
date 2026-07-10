@@ -261,4 +261,21 @@ Code builds and runs correctly.
 
 
 PROOBLEM 2: Error during restoration: connection to server at "db.zvuhyegwvrqqmwbdajon.supabase.co" (2406:da14:1d4f:7400:7ede:6ced:1438:ecc), port 5432 failed: Network is unreachable Is the server running on that host and accepting TCP/IP connections?
+
 PROOBLEM 3: Now there is another issue, In the System, the System Restoring are accepted the file but when I look at the supabase all the data are wiped out.
+SOLTION: 
+ • Bypassing Foreign Key Wipeouts: The  admin_db_restore.py  view now
+  explicitly breaks the restoration process into two parts: creating the tables
+  ( --schema-only ) and then inserting the data ( --data-only ).
+  • Disabled Triggers: During the data insertion phase, I added the  --disable-
+  triggers  flag. This forces PostgreSQL to ignore foreign key constraints
+  (like checking if your students exist in  auth.users ) while it populates
+  your tables. This means your data will no longer get silently rejected and
+  wiped out.
+  • Transparent Errors: I adjusted the backend logic so that if any non-fatal
+  warnings occur during the restoration, they are sent back as a  400 Bad
+  Request  instead of a  200 OK . This guarantees the frontend will explicitly
+  display the problem to you instead of blindly claiming success.
+
+
+PROBLEM 4: Another alert error occur [Completed with warnings: pg_restore: error: could not read from input file: end of file].

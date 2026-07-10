@@ -43,11 +43,11 @@ def admin_db_backup(request):
             db_url,
             "-Fc",
             "--no-owner",
-            "--no-privileges"
+            "--no-privileges",
+            "-f", temp_file_path
         ]
         
-        with open(temp_file_path, "wb") as f:
-            result = subprocess.run(command, stdout=f, stderr=subprocess.PIPE)
+        result = subprocess.run(command, stderr=subprocess.PIPE)
         
         if result.returncode != 0:
             if os.path.exists(temp_file_path):

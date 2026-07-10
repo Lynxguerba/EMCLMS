@@ -42,7 +42,7 @@ def admin_db_restore(request):
     db_url = normalize_supabase_direct_url(db_url)
 
     # Save uploaded file to a temporary location
-    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".dump") as tmp:
         for chunk in backup_file.chunks():
             tmp.write(chunk)
         tmp_path = tmp.name
@@ -64,6 +64,7 @@ def admin_db_restore(request):
             "pg_restore",
             "-d", db_url,
             "--role=postgres",
+            "-Fc",
             "--clean",
             "--if-exists",
             "--no-owner",
@@ -78,6 +79,7 @@ def admin_db_restore(request):
             "pg_restore",
             "-d", db_url,
             "--role=postgres",
+            "-Fc",
             "--disable-triggers",
             "--data-only",
             "--schema=public",
