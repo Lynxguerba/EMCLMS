@@ -74,12 +74,27 @@ export const getContentFileActionUrl = (
   return getRemoteFileUrl(file);
 };
 
-export const openDirectFile = (
+export const openDirectFile = async (
   file: string | RemoteFile,
   action: "open" | "download" = "open"
 ) => {
-  const url = getContentFileActionUrl(file, action);
+  let url = getContentFileActionUrl(file, action);
   if (!url) return;
+
+  if (url.includes("/api/content-files/")) {
+    try {
+      // Import axios dynamically to avoid circular dependencies if any,
+      // or just assume standard import if we add it at the top.
+      const axios = (await import("axios")).default;
+      const response = await axios.get(url, { withCredentials: true });
+      if (response.data && response.data.url) {
+        url = response.data.url;
+      }
+    } catch (error) {
+      console.error("Error fetching direct file URL:", error);
+      // Let it fall through to the old window.open as a fallback
+    }
+  }
 
   window.open(url, "_blank", "noopener,noreferrer");
 };
