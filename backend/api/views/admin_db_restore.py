@@ -59,29 +59,18 @@ def admin_db_restore(request):
         # which is not a real role and breaks CREATE SCHEMA.
         prepare_public_schema_for_restore(db_url)
 
-        # Step 2: Restore Schema Only
-        schema_command = [
+        # Step 2: Restore Schema and Data together
+        # We omit --clean and --if-exists because prepare_public_schema_for_restore already drops the schema.
+        # We omit --disable-triggers because it requires superuser privileges and fails on Supabase.
+        # Running both together ensures pg_restore handles the Pre-data -> Data -> Post-data phases correctly,
+        # preventing foreign key violations during data insertion.
+        restore_command = [
             "pg_restore",
             "-d", db_url,
             "--role=postgres",
             "-Fc",
-            "--clean",
-            "--if-exists",
             "--no-owner",
             "--no-privileges",
-            "--schema-only",
-            "--schema=public",
-            tmp_path
-        ]
-        
-        # Step 3: Restore Data Only (with triggers disabled to bypass FK checks)
-        data_command = [
-            "pg_restore",
-            "-d", db_url,
-            "--role=postgres",
-            "-Fc",
-            "--disable-triggers",
-            "--data-only",
             "--schema=public",
             tmp_path
         ]
@@ -100,8 +89,7 @@ def admin_db_restore(request):
                 print(f"Warning during pg_restore: {stderr}")
 
         try:
-            run_restore_command(schema_command)
-            run_restore_command(data_command)
+            run_restore_command(restore_command)
             
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
