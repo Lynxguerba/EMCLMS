@@ -37,6 +37,8 @@ import InstructorCourseContentModal from "./components/InstructorCourseContentMo
 import InstructorRecommendedBooksTable from "./components/InstructorRecommendedBooksTable";
 import { CourseContentSkeleton } from "./components/Skeletons";
 
+
+
 // Other libraries
 import axios from "axios";
 
