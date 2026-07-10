@@ -34,7 +34,6 @@ COPY . /app/
 # Port for Render
 EXPOSE 8000
 
-# The CMD will run migrations, collect static files, and start the server
-CMD python manage.py migrate && \
-    python manage.py collectstatic --no-input && \
+# The CMD will collect static files and start the server
+CMD python manage.py collectstatic --no-input && \
     gunicorn core.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --threads 2 --timeout 300
