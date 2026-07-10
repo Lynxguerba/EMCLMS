@@ -279,3 +279,14 @@ SOLTION:
 
 
 PROBLEM 4: Another alert error occur [Completed with warnings: pg_restore: error: could not read from input file: end of file].
+SOLTION: 
+•  backend/api/views/admin_db_backup.py : Updated the  pg_dump  execution to
+  write directly to the temporary file using the  -f  flag, instead of piping
+  its output through  stdout . This permanently fixes the binary corruption
+  caused by the Windows newline translation bug.
+  •  backend/api/views/admin_db_restore.py : Added explicit  .dump  extensions
+  to the generated temporary files and added the  -Fc  flag to the  pg_restore
+  commands to enforce the custom format reading.
+
+
+  

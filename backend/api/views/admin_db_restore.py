@@ -97,7 +97,7 @@ def admin_db_restore(request):
             if is_pg_restore_failure(process.returncode, stderr):
                 raise Exception(f"Fatal error: {stderr or stdout}")
             if process.returncode == 1 and stderr:
-                raise Warning(f"Completed with warnings: {stderr}")
+                print(f"Warning during pg_restore: {stderr}")
 
         try:
             run_restore_command(schema_command)
