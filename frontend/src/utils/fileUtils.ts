@@ -96,5 +96,5 @@ export const openDirectFile = async (
     }
   }
 
-  window.open(url, "_blank", "noopener,noreferrer");
+  await forceDownload(url, getRemoteFileName(file));
 };
