@@ -23,20 +23,7 @@ export const getFileUrl = (path: string | null | undefined): string => {
 
 export const forceDownload = async (url: string, fileName: string) => {
   try {
-    // Detect if this is an external URL (e.g. Cloudinary, S3)
-    // External URLs should NOT include credentials to avoid CORS failures
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
-    const isInternal =
-      url.startsWith("/") ||
-      (baseUrl && url.startsWith(baseUrl)) ||
-      url.includes("localhost") ||
-      url.includes("127.0.0.1");
-
-    const fetchOptions: RequestInit = isInternal
-      ? { credentials: "include" }
-      : { mode: "cors" };
-
-    const response = await fetch(url, fetchOptions);
+    const response = await fetch(url, { credentials: "include" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const blob = await response.blob();
     const blobUrl = window.URL.createObjectURL(blob);
@@ -106,24 +93,18 @@ export const openDirectFile = async (
 
   if (url.includes("/api/content-files/")) {
     try {
+      // Import axios dynamically to avoid circular dependencies if any,
+      // or just assume standard import if we add it at the top.
       const axios = (await import("axios")).default;
       const response = await axios.get(url, { withCredentials: true });
       if (response.data && response.data.url) {
         url = response.data.url;
-      } else {
-        url = getRemoteFileUrl(file);
       }
     } catch (error) {
       console.error("Error fetching direct file URL:", error);
-      url = getRemoteFileUrl(file);
+      // Let it fall through to the old window.open as a fallback
     }
   }
 
-  if (!url) return;
-
-  if (action === "download") {
-    triggerBrowserDownload(url, getRemoteFileName(file));
-  } else {
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
+  await forceDownload(url, getRemoteFileName(file));
 };
