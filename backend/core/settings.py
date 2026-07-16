@@ -258,6 +258,19 @@ CLOUDINARY_STORAGE = {
     "SECURE": True,
 }
 
+# Initialize the cloudinary SDK so that cloudinary.utils.cloudinary_url()
+# can generate correct signed URLs for raw file delivery.
+# django-cloudinary-storage only configures its own storage backends;
+# the underlying cloudinary SDK needs separate initialization.
+import cloudinary
+if CLOUDINARY_STORAGE.get("CLOUD_NAME"):
+    cloudinary.config(
+        cloud_name=CLOUDINARY_STORAGE["CLOUD_NAME"],
+        api_key=CLOUDINARY_STORAGE["API_KEY"],
+        api_secret=CLOUDINARY_STORAGE["API_SECRET"],
+        secure=True,
+    )
+
 # Use the modern STORAGES setting for Django 4.2+
 STORAGES = {
     "default": {

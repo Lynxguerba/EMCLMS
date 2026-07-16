@@ -15,20 +15,48 @@ def build_file_url(request, file_field, attachment=False, filename=None):
     try:
         storage_class = file_field.storage.__class__.__name__
         if "Cloudinary" in storage_class:
-            from cloudinary.utils import cloudinary_url
+            from cloudinary.utils import cloudinary_url as cld_url
+            import cloudinary as cld_lib
+
             resource_type = "raw" if "Raw" in storage_class else "image"
-            options = {"resource_type": resource_type, "sign_url": True}
+            options = {
+                "resource_type": resource_type,
+                "type": "upload",
+                "sign_url": True,
+            }
             if attachment and filename:
                 options["flags"] = f"attachment:{urllib.parse.quote(filename)}"
-            url, _ = cloudinary_url(file_field.name, **options)
+
+            # Only attempt signed URL generation if cloudinary SDK is configured
+            if cld_lib.config().cloud_name:
+                url, _ = cld_url(file_field.name, **options)
+                if url:
+                    if url.startswith("//"):
+                        return f"https:{url}"
+                    if url.startswith(("http://", "https://")):
+                        return url
+
+            # Fallback: use the storage backend's own .url property
+            # (django-cloudinary-storage generates correct Cloudinary URLs)
+            url = file_field.url
             if url:
-                if url.startswith(("http://", "https://", "//")):
-                    return f"https:{url}" if url.startswith("//") else url
+                if url.startswith("//"):
+                    return f"https:{url}"
+                if url.startswith(("http://", "https://")):
+                    # For attachment downloads, inject the fl_attachment flag
+                    if attachment and filename:
+                        url = cloudinary_attachment_url(url, filename)
+                    return url
                 return request.build_absolute_uri(url)
     except Exception:
         pass
 
-    url = file_field.url
+    # Final fallback for non-Cloudinary or any error
+    try:
+        url = file_field.url
+    except Exception:
+        return None
+
     if url.startswith(("http://", "https://", "//")):
         return f"https:{url}" if url.startswith("//") else url
 
@@ -150,9 +178,5 @@ def download_content_file(request, file_id):
     download_url = build_file_url(request, content_file.file, attachment=True, filename=file_name)
     if not download_url:
         return Response({"detail": "File URL not available"}, status=404)
-
-    # fallback if build_file_url didn't handle attachment (e.g. not Cloudinary)
-    if "Cloudinary" not in content_file.file.storage.__class__.__name__:
-        download_url = cloudinary_attachment_url(download_url, file_name)
 
     return Response({"url": download_url})
