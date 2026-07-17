@@ -135,7 +135,7 @@ export default function InstructorCourseContentModal({
                     return (
                       <button
                         key={index}
-                        onClick={() => openDirectFile(file, "open")}
+                        onClick={() => openDirectFile(file, "download")}
                         className="w-full flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition-all duration-200 group"
                       >
                         <div className="bg-indigo-100 p-2 rounded-lg group-hover:bg-indigo-200 transition-colors">
@@ -145,9 +145,9 @@ export default function InstructorCourseContentModal({
                           <p className="text-sm font-medium text-gray-900 truncate">
                             {fileName}
                           </p>
-                          <p className="text-xs text-gray-500">Click to open</p>
+                          <p className="text-xs text-gray-500">Click to download</p>
                         </div>
-                        <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 transition-colors flex-shrink-0" />
+                        <Download className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 transition-colors flex-shrink-0" />
                       </button>
                     );
                   })}

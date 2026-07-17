@@ -228,8 +228,12 @@ function FilePreview({ fileUrl }: { fileUrl: string }) {
               setPreviewError(true);
               setPreviewLoading(false);
             });
+        } else if (isPdf || isWord || isOffice) {
+          // For external PDFs and Office docs on Cloudinary, inline viewing is blocked by default security rules
+          // We force an error state which gracefully prompts the user to download the file instead
+          setPreviewError(true);
+          setPreviewLoading(false);
         } else {
-          // For external PDFs, we let the iframe handle it
           setPreviewLoading(false);
         }
       }

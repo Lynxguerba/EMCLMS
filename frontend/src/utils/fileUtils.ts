@@ -21,8 +21,41 @@ export const getFileUrl = (path: string | null | undefined): string => {
   return normalizedBaseUrl ? `${normalizedBaseUrl}${normalizedPath}` : normalizedPath;
 };
 
+export const getCloudinaryDownloadUrl = (url: string, fileName?: string): string => {
+  if (!url || !url.includes("res.cloudinary.com") || !url.includes("/upload/")) {
+    return url;
+  }
+  
+  if (url.includes("/fl_attachment")) {
+    return url;
+  }
+
+  let attachmentFlag = "fl_attachment";
+  if (fileName) {
+    attachmentFlag = `fl_attachment:${encodeURIComponent(fileName)}`;
+  }
+  
+  return url.replace("/upload/", `/upload/${attachmentFlag}/`);
+};
+
 export const forceDownload = async (url: string, fileName: string) => {
   try {
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
+    const isInternal =
+      url.startsWith("/") ||
+      (baseUrl && url.startsWith(baseUrl)) ||
+      url.includes("localhost") ||
+      url.includes("127.0.0.1");
+
+    if (!isInternal) {
+      // For external URLs (like Cloudinary), attempting a cross-origin fetch
+      // will fail due to CORS. Just trigger the browser's native download.
+      // Append fl_attachment to Cloudinary URLs to bypass inline security restrictions
+      const downloadUrl = getCloudinaryDownloadUrl(url, fileName);
+      triggerBrowserDownload(downloadUrl, fileName);
+      return;
+    }
+
     const response = await fetch(url, { credentials: "include" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const blob = await response.blob();
@@ -44,6 +77,7 @@ export const triggerBrowserDownload = (url: string, fileName: string) => {
   const link = document.createElement("a");
   link.href = url;
   link.download = fileName || "download";
+  link.target = "_blank";
   link.rel = "noopener noreferrer";
   document.body.appendChild(link);
   link.click();
