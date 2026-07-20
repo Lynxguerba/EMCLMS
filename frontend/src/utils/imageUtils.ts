@@ -22,7 +22,7 @@ export const getProfilePictureUrl = (
     }
 
     // Fix malformed double-protocol URLs on remote domains
-    if (url.includes("res.cloudinary.com") || url.includes("drive.google.com")) {
+    if (url.includes("res.cloudinary.com")) {
       url = url.replace(/^(https?:\/\/)+/, "https://");
     }
 

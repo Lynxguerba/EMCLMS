@@ -286,8 +286,8 @@ STORAGES = {
     "raw": {
         "BACKEND": "django.core.files.storage.FileSystemStorage"
         if IS_TESTING
-        else ("core.google_drive_storage.GoogleDriveStorage"
-              if not DEBUG or GOOGLE_DRIVE_FOLDER_ID
+        else ("cloudinary_storage.storage.RawMediaCloudinaryStorage"
+              if not DEBUG or CLOUDINARY_STORAGE.get("CLOUD_NAME")
               else "django.core.files.storage.FileSystemStorage"),
     },
     "staticfiles": {

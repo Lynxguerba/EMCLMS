@@ -21,19 +21,6 @@ export const getFileUrl = (path: string | null | undefined): string => {
   return normalizedBaseUrl ? `${normalizedBaseUrl}${normalizedPath}` : normalizedPath;
 };
 
-export const getGoogleDriveDownloadUrl = (url: string, _fileName?: string): string => {
-  if (!url || !url.includes("drive.google.com")) {
-    return url;
-  }
-
-  // Extract file ID from Google Drive URLs
-  const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (!fileIdMatch) return url;
-
-  const fileId = fileIdMatch[1];
-  return `https://drive.google.com/uc?id=${fileId}&export=download`;
-};
-
 export const forceDownload = async (url: string, fileName: string) => {
   try {
     const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
@@ -44,10 +31,9 @@ export const forceDownload = async (url: string, fileName: string) => {
       url.includes("127.0.0.1");
 
     if (!isInternal) {
-      // For external URLs (like Google Drive), attempting a cross-origin fetch
+      // For external URLs, attempting a cross-origin fetch
       // will fail due to CORS. Just trigger the browser's native download.
-      const downloadUrl = getGoogleDriveDownloadUrl(url, fileName);
-      triggerBrowserDownload(downloadUrl, fileName);
+      triggerBrowserDownload(url, fileName);
       return;
     }
 

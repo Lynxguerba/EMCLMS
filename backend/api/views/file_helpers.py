@@ -6,7 +6,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from ..models import ContentFile, Enrollment, FileDownload, User
-from core.google_drive_storage import GoogleDriveStorage
 
 
 def build_file_url(request, file_field, attachment=False, filename=None):
@@ -49,12 +48,7 @@ def build_file_url(request, file_field, attachment=False, filename=None):
                         url = cloudinary_attachment_url(url, filename)
                     return url
                 return request.build_absolute_uri(url)
-        elif "GoogleDrive" in storage_class:
-            from core.google_drive_service import get_view_url, get_download_url
-            file_id = GoogleDriveStorage._extract_file_id(file_field.name)
-            if attachment:
-                return get_download_url(file_id)
-            return get_view_url(file_id)
+
     except Exception:
         pass
 
