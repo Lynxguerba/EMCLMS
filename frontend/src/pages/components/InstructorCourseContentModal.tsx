@@ -5,7 +5,6 @@ import {
   Calendar,
   Tag,
   Download,
-  ExternalLink,
 } from "lucide-react";
 import { InstructorCourse_Content as Content } from "../../types/content";
 import {
