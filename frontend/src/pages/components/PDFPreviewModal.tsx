@@ -51,7 +51,7 @@ export default function PDFPreviewModal({
             setLoading(false);
           });
       } else {
-        // External URL (Cloudinary, etc.) - let iframe handle it directly
+        // External URL (Google Drive, Cloudinary, etc.) - let iframe handle it directly
         // Just set loading to false, we'll use fileUrl in the iframe
         setLoading(false);
       }

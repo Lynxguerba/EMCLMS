@@ -258,6 +258,9 @@ CLOUDINARY_STORAGE = {
     "SECURE": True,
 }
 
+# Google Drive API (used for document storage: PDFs, Word docs, ebooks, submissions)
+GOOGLE_DRIVE_FOLDER_ID = os.environ.get("GOOGLE_DRIVE_FOLDER_ID", "")
+
 # Initialize the cloudinary SDK so that cloudinary.utils.cloudinary_url()
 # can generate correct signed URLs for raw file delivery.
 # django-cloudinary-storage only configures its own storage backends;
@@ -283,8 +286,8 @@ STORAGES = {
     "raw": {
         "BACKEND": "django.core.files.storage.FileSystemStorage"
         if IS_TESTING
-        else ("cloudinary_storage.storage.RawMediaCloudinaryStorage" 
-              if not DEBUG or CLOUDINARY_STORAGE.get("CLOUD_NAME") 
+        else ("core.google_drive_storage.GoogleDriveStorage"
+              if not DEBUG or GOOGLE_DRIVE_FOLDER_ID
               else "django.core.files.storage.FileSystemStorage"),
     },
     "staticfiles": {

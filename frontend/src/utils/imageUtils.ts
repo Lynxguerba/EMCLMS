@@ -3,13 +3,8 @@ export const getProfilePictureUrl = (
 ): string | undefined => {
   if (!profilePicture || profilePicture === "null" || profilePicture === "None") return undefined;
 
-  // 1. Handle Cloudinary URLs or full URLs
-  if (
-    profilePicture.includes("res.cloudinary.com") ||
-    profilePicture.includes("cloudinary.com") ||
-    /^https?:\/\//i.test(profilePicture) ||
-    profilePicture.startsWith("//")
-  ) {
+  // 1. Handle full URLs (Cloudinary, Google Drive, or other remote URLs)
+  if (/^https?:\/\//i.test(profilePicture) || profilePicture.startsWith("//")) {
     let url = profilePicture;
 
     // Fix protocol-relative URLs
@@ -17,7 +12,7 @@ export const getProfilePictureUrl = (
       url = `https:${url}`;
     }
 
-    // Force https for Cloudinary and other remote images (except localhost)
+    // Force https for remote images (except localhost)
     if (
       url.startsWith("http://") &&
       !url.includes("localhost") &&
@@ -26,8 +21,8 @@ export const getProfilePictureUrl = (
       url = url.replace("http://", "https://");
     }
 
-    // If it's a Cloudinary URL that somehow got malformed (e.g. double https)
-    if (url.includes("res.cloudinary.com")) {
+    // Fix malformed double-protocol URLs on remote domains
+    if (url.includes("res.cloudinary.com") || url.includes("drive.google.com")) {
       url = url.replace(/^(https?:\/\/)+/, "https://");
     }
 

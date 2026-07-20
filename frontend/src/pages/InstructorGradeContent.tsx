@@ -216,7 +216,7 @@ function FilePreview({ fileUrl }: { fileUrl: string }) {
             setPreviewLoading(false);
           });
       } else {
-        // External URL (Cloudinary etc)
+        // External URL (Google Drive, Cloudinary, etc.)
         if (isText) {
           fetch(fileUrl)
             .then(res => res.text())
@@ -229,7 +229,7 @@ function FilePreview({ fileUrl }: { fileUrl: string }) {
               setPreviewLoading(false);
             });
         } else if (isPdf || isWord || isOffice) {
-          // For external PDFs and Office docs on Cloudinary, inline viewing is blocked by default security rules
+          // For external PDFs and Office docs, inline viewing may be restricted
           // We force an error state which gracefully prompts the user to download the file instead
           setPreviewError(true);
           setPreviewLoading(false);

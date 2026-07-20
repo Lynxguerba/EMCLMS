@@ -21,21 +21,17 @@ export const getFileUrl = (path: string | null | undefined): string => {
   return normalizedBaseUrl ? `${normalizedBaseUrl}${normalizedPath}` : normalizedPath;
 };
 
-export const getCloudinaryDownloadUrl = (url: string, fileName?: string): string => {
-  if (!url || !url.includes("res.cloudinary.com") || !url.includes("/upload/")) {
-    return url;
-  }
-  
-  if (url.includes("/fl_attachment")) {
+export const getGoogleDriveDownloadUrl = (url: string, _fileName?: string): string => {
+  if (!url || !url.includes("drive.google.com")) {
     return url;
   }
 
-  let attachmentFlag = "fl_attachment";
-  if (fileName) {
-    attachmentFlag = `fl_attachment:${encodeURIComponent(fileName)}`;
-  }
-  
-  return url.replace("/upload/", `/upload/${attachmentFlag}/`);
+  // Extract file ID from Google Drive URLs
+  const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (!fileIdMatch) return url;
+
+  const fileId = fileIdMatch[1];
+  return `https://drive.google.com/uc?id=${fileId}&export=download`;
 };
 
 export const forceDownload = async (url: string, fileName: string) => {
@@ -48,10 +44,9 @@ export const forceDownload = async (url: string, fileName: string) => {
       url.includes("127.0.0.1");
 
     if (!isInternal) {
-      // For external URLs (like Cloudinary), attempting a cross-origin fetch
+      // For external URLs (like Google Drive), attempting a cross-origin fetch
       // will fail due to CORS. Just trigger the browser's native download.
-      // Append fl_attachment to Cloudinary URLs to bypass inline security restrictions
-      const downloadUrl = getCloudinaryDownloadUrl(url, fileName);
+      const downloadUrl = getGoogleDriveDownloadUrl(url, fileName);
       triggerBrowserDownload(downloadUrl, fileName);
       return;
     }

@@ -45,7 +45,8 @@ Follow these steps to set up the Django development environment for EMCLMS.
     ```
 
 ## External Services
-- **Cloudinary:** To enable media uploads, configure `CLOUDINARY_STORAGE` in your settings with your Cloud Name, API Key, and Secret.
+- **Cloudinary:** To enable media uploads (images, videos), configure `CLOUDINARY_STORAGE` in your settings with your Cloud Name, API Key, and Secret.
+- **Google Drive API:** To enable document storage (PDFs, Word docs, ebooks, submissions), configure `GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON` and `GOOGLE_DRIVE_FOLDER_ID` in your `.env` file. See [GOOGLE_DRIVE_SETUP.md](../../GOOGLE_DRIVE_SETUP.md) for detailed setup instructions.
 - **WhiteNoise:** Used in development and production to serve static files efficiently without a separate Nginx setup for simple deployments.
 
 ## Troubleshooting

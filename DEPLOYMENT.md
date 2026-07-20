@@ -129,6 +129,8 @@ To solve this, the project contains an optimized Dockerfile under the `backend` 
 | `CLOUDINARY_CLOUD_NAME` | *Your Cloudinary Cloud Name* |
 | `CLOUDINARY_API_KEY` | *Your Cloudinary API Key* |
 | `CLOUDINARY_API_SECRET` | *Your Cloudinary API Secret* |
+| `GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON` | *Paste the entire service account JSON content (see GOOGLE_DRIVE_SETUP.md)* |
+| `GOOGLE_DRIVE_FOLDER_ID` | *Your Google Drive folder ID (see GOOGLE_DRIVE_SETUP.md)* |
 | `BREVO_API_KEY` | *Your Brevo API Key* |
 | `BREVO_SENDER_EMAIL` | *Your verified Brevo sender email address* |
 
